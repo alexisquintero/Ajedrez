@@ -4,16 +4,20 @@ public class Rey extends Pieza {
 	
 	public Rey(boolean L) {
 		super(L);
-		// TODO Auto-generated constructor stub
+		if(L){
+			simbolo = '\u2654';
+		}else{
+			simbolo = '\u265A';
+		}		
 	}
 
 	/**Devuelve un Array 8x8 con 1 en las posiciones permitidas para esa pieza, ignorando las demas piezas
 	 * 
 	 */
-	public char[][] movimientosPermitidos(int fila, int columna){
+	public int[][] movimientosPermitidos(int fila, int columna){
 		
 		//Inicializo el arreglo
-		char[][] arregloPermitidos = new char[7][7];
+		int[][] arregloPermitidos = new int[8][8];
 		for(int m = 0; m < 8; m++){
 			for(int n = 0; n < 8; n++){
 				arregloPermitidos[m][n] = 0;
@@ -55,7 +59,7 @@ public class Rey extends Pieza {
 					}
 						
 					//Mientras no se salga de los límites del tablero
-					while((x > 0) && (x < 7) && (y > 0) && (y < 7)){
+					if((x >= 0) && (x <= 7) && (y >= 0) && (y <= 7)){
 						arregloPermitidos[x][y] = 1;
 					}
 				}	

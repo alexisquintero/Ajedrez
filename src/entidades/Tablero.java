@@ -2,7 +2,7 @@ package entidades;
 
 public class Tablero {
 	
-	private Pieza[][] piezas = new Pieza[7][7];
+	private Pieza[][] piezas = new Pieza[8][8];
 	
 	public Tablero(){
 		
@@ -26,72 +26,15 @@ public class Tablero {
 			piezas[fila][2] = new Alfil(lado);
 			piezas[fila][5] = new Alfil(lado);
 			
-			int columna = lado ? 3 : 4;
+			int columna = 3;
 			piezas[fila][columna] = new Reina(lado);
 			
-			columna = lado ? 4 : 3;
+			columna = 4;
 			piezas[fila][columna] = new Rey(lado);
 			
 			lado = false;
 		}
 	}
-	
-/*
-		boolean lado = true;
-		int fila = 1; // para blancas
-		
-		//2 lados
-		for(int i=0; i < 2; i++){
-
-				//8 peones
-				for(int k=0; k < 8; k++){
-
-					Peon peon = new Peon(lado, fila, k); //lado , fila 2, columna k
-					piezasActivas.add(peon);
-					
-				}
-				fila = lado ? fila - 1 : fila + 1;
-				//Alfiles
-						
-					Alfil alfil1 = new Alfil(lado, fila , 2);
-					piezasActivas.add(alfil1);
-					Alfil alfil2 = new Alfil(lado, 0, 5);
-					piezasActivas.add(alfil2);
-				
-				//Caballos
-					
-					Caballo caballo1 = new Caballo(lado, fila, 1);
-					piezasActivas.add(caballo1);
-					Caballo caballo2 = new Caballo(lado, fila, 6);
-					piezasActivas.add(caballo2);
-					
-				//Torres
-					
-					Torre torre1 = new Torre(lado, fila, 0);
-					piezasActivas.add(torre1);
-					Torre torre2 = new Torre(lado, fila, 7);
-					piezasActivas.add(torre2);
-					
-				//Rey
-					
-					int col = lado ? 4 : 3;
-					Rey rey = new Rey(lado, fila, col);
-					piezasActivas.add(rey);
-					
-				//Reina
-					
-					col = lado ? 3 : 4;
-					Reina reina = new Reina(lado, fila, col);
-					piezasActivas.add(reina);
-							
-			lado = False;
-			fila = 6; //para negras
-		}
-	}
-	
-	private ArrayList<Pieza> piezasActivas;
-	private ArrayList<Pieza> piezasComidas;
-*/
 		
 	/**Devuelve un arreglo 8x8 con 0 en las posiciones libres, 1 en las posiciones ocupadas y 2 para peones en passant
 	 * 
@@ -118,6 +61,12 @@ public class Tablero {
 		return arregloPosibles;	
 	}
 	
+	public int[][] movimientosPosibles(StringBuilder desde){
+		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
+		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;
+		return piezas[filaDesde][columnaDesde].movimientosPermitidos(columnaDesde, filaDesde);
+	}
+	
 	
 	/**Comprueba si hay algún rey en jaque
 	 * 
@@ -126,14 +75,33 @@ public class Tablero {
 		
 	}
 	
-	/**Actualiza el tablero ante un nuevo movimiento
-	 * 
-	 * @param posVieja Posición vieja. "Fila Columna"
-	 * @param PosNueva Posición nueva. "Fila Columna"
-	 */
-	public void Movimiento(String posVieja, String PosNueva){
+	public char[][] Posiciones(){
+		char[][] posicion = new char[8][8];
 		
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				posicion[i][j] = piezas[i][j] == null? '\u0000' : piezas[i][j].getSimbolo(); //\u200A
+			}
+			
+		}
 		
+		return posicion;
+	}
+	
+	
+	public char movimiento(StringBuilder desde, StringBuilder hasta){
+		
+//		System.out.println(desde + " " + hasta);
+		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
+		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;
+		int columnaHasta = Character.getNumericValue(hasta.charAt(0))-10;
+		int filaHasta = Character.getNumericValue(hasta.charAt(1))-1;
+//		System.out.println(filaDesde + " " + columnaDesde + " " + filaHasta + " " + columnaHasta);
+		
+		piezas[filaHasta][columnaHasta] = piezas[filaDesde][columnaDesde];  //mueve la pieza desde a hasta
+		piezas[filaDesde][columnaDesde] = null;		 //pone null en desde
+		
+		return piezas[filaHasta][columnaHasta].getSimbolo();
 	}
 
 }

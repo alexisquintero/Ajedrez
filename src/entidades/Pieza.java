@@ -41,6 +41,16 @@ public class Pieza {
 	
 	protected boolean sinMover = true; //Me interesa en peon para en passant, y en torre y rey para enroque
 	
+	protected char simbolo;  //Simbolo unicode de la pieza
+	
+	public char getSimbolo() {
+		return simbolo;
+	}
+
+	public void setSimbolo(char simbolo) {
+		this.simbolo = simbolo;
+	}
+
 	/**Inicializa la pieza 
 	 * 
 	 * @param L Lado para el que juega
@@ -52,9 +62,9 @@ public class Pieza {
 	/**Devuelve un Array 8x8 con 1 en las posiciones permitidas para esa pieza, ignorando las demas piezas
 	 * 
 	 */
-	public char[][] movimientosPermitidos(int columna, int fila){
+	public int[][] movimientosPermitidos(int columna, int fila){
 		
-		char[][] arregloPermitidos = new char[7][7];
+		int[][] arregloPermitidos = new int[8][8];
 			for(int m = 0; m < 8; m++){
 				for(int n = 0; n < 8; n++){
 					arregloPermitidos[m][n] = 0;

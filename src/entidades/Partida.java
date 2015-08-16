@@ -2,6 +2,8 @@ package entidades;
 
 public class Partida {
 	
+	private Tablero tablero = new Tablero();
+	
 	private Jugador blancas;
 	public Jugador getBlancas() {
 		return blancas;
@@ -40,6 +42,15 @@ public class Partida {
 	}
 	public void setMovimientos(StringBuffer movimientos) {
 		this.movimientos = movimientos;
+	}
+	public char[][] Posiciones() {		
+		return tablero.Posiciones();
+	}
+	public char movimiento(StringBuilder desde, StringBuilder hasta) {
+		return tablero.movimiento(desde, hasta);
+	}
+	public int[][] movimientosPosibles(StringBuilder desde) {
+		return tablero.movimientosPosibles(desde);
 	}
 	
 }

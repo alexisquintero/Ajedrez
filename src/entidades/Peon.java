@@ -7,16 +7,21 @@ public class Peon extends Pieza {
 	
 	public Peon(boolean L) {
 		super(L);
-		// TODO Auto-generated constructor stub
+		if(L){
+			simbolo = '\u2659';
+		}else{
+			simbolo = '\u265F';
+		}
+		
 	}
 
 	/**Devuelve un Array 8x8 con 1 en las posiciones permitidas para esa pieza, ignorando las demas piezas
 	 * 
 	 */
-	public char[][] movimientosPermitidos(int fila, int columna){
+	public int[][] movimientosPermitidos(int fila, int columna){
 		
 		//Inicializo el arreglo
-		char[][] arregloPermitidos = new char[7][7];
+		int[][] arregloPermitidos = new int[8][8];
 		for(int m = 0; m < 8; m++){
 			for(int n = 0; n < 8; n++){
 				arregloPermitidos[m][n] = 0;
@@ -27,26 +32,26 @@ public class Peon extends Pieza {
 		int y = fila;
 		
 		if(lado){
-			x += 1; y += 1;
+			x += 1;// y += 1;
 		}
 		else{
-			x -= 1; y -= 1;
+			x -= 1;// y -= 1;
 		}
 		
-		if((x > 0) && (x < 7) && (y > 0) && (y < 7)){
+		if((x >= 0) && (x <= 7) && (y >= 0) && (y <= 7)){
 			arregloPermitidos[x][y] = 1;
 		}
 		
 		if(sinMover){
 			
 			if(lado){
-				x += 1; y += 1;
+				x += 1;// y += 1;
 			}
 			else{
-				x -= 1; y -= 1;
+				x -= 1;// y -= 1;
 			}
 			
-			if((x > 0) && (x < 7) && (y > 0) && (y < 7)){
+			if((x >= 0) && (x <= 7) && (y >= 0) && (y <= 7)){
 				arregloPermitidos[x][y] = 1;
 			}
 			
