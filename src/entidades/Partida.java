@@ -41,19 +41,32 @@ public class Partida {
 	public char[][] Posiciones() {		
 		return tablero.Posiciones();
 	}
-	public char movimiento(StringBuilder desde, StringBuilder hasta) {
+	public char movimiento(StringBuilder desde, StringBuilder hasta) {		
+		char pieza = tablero.movimiento(desde, hasta);
+		if(pieza == 'F'){
+			if(turno){
+				//sumar una victoria a blancas y finalizar partida
+			}else{
+				//sumar una victoria a negras y finalizar partida
+			}
+		}
 		turno = turno ? false : true;
-		return tablero.movimiento(desde, hasta);		
+		return pieza;		
 	}
 	public int[][] movimientosPosibles(StringBuilder desde, boolean lado) {
-		if(tablero.getLado(desde) == lado){
-			if(turno == lado){
-				return tablero.movimientosLegales(tablero.movimientosPosibles(desde), lado, desde);
-			}else{
-				return null;
+		if (!tablero.esNulo(desde)) {
+			if (tablero.getLado(desde) == lado) {
+				if (turno == lado) {
+					return tablero.movimientosLegales(
+							tablero.movimientosPosibles(desde), lado, desde);
+				} else {
+					return new int[2][2];
+				}
+			} else {
+				return new int[2][2];
 			}
 		}else{
-			return null;
+			return new int[1][1];
 		}
 	}
 	

@@ -86,7 +86,7 @@ public class Tablero {
 		return controlarMovimientos(arregloPosibles, desde);
 	}
 	
-	public int[][] movimientosPosibles(StringBuilder desde){
+	public int[][] movimientosPosibles(StringBuilder desde){	//TODO: controlar que el peon no pueda moverse para adelante si hay una pieza	
 		char comer = 'N';	//N: no come|A:come 2 lados|D: come derecha|I:come izquierda
 		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
 		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;
@@ -116,7 +116,7 @@ public class Tablero {
 				}
 			}
 		}
-		return piezas[filaDesde][columnaDesde].movimientosPermitidos(columnaDesde, filaDesde, comer); //TODO: agregar parámetro indiando si es caballo
+		return piezas[filaDesde][columnaDesde].movimientosPermitidos(columnaDesde, filaDesde, comer); 
 	}
 	
 	
@@ -143,23 +143,30 @@ public class Tablero {
 	
 	public char movimiento(StringBuilder desde, StringBuilder hasta){
 		
-//		System.out.println(desde + " " + hasta);
-		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
-		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;
-		int columnaHasta = Character.getNumericValue(hasta.charAt(0))-10;
-		int filaHasta = Character.getNumericValue(hasta.charAt(1))-1;
-//		System.out.println(filaDesde + " " + columnaDesde + " " + filaHasta + " " + columnaHasta);
-		
-		piezas[filaHasta][columnaHasta] = piezas[filaDesde][columnaDesde];  //mueve la pieza desde a hasta
-		piezas[filaDesde][columnaDesde] = null;		 //pone null en desde
-		piezas[filaHasta][columnaHasta].mover();
-		
-		return piezas[filaHasta][columnaHasta].getSimbolo();
+		char simbolo = 'F';
+		boolean flagJaqueMate = false;
+		int columnaHasta = Character.getNumericValue(hasta.charAt(0)) - 10;
+		int filaHasta = Character.getNumericValue(hasta.charAt(1)) - 1;
+
+		if (piezas[filaHasta][columnaHasta] != null) { //Controla que no se coma al Rey
+			if ((piezas[filaHasta][columnaHasta].getSimbolo() == '\u265A') || (piezas[filaHasta][columnaHasta].getSimbolo() == '\u2654')) { 
+				flagJaqueMate = true;
+			}
+		}
+		if(!flagJaqueMate){					
+			int columnaDesde = Character.getNumericValue(desde.charAt(0)) - 10;
+			int filaDesde = Character.getNumericValue(desde.charAt(1)) - 1;
+			piezas[filaHasta][columnaHasta] = piezas[filaDesde][columnaDesde]; //mueve la pieza desde a hasta
+			piezas[filaDesde][columnaDesde] = null; //pone null en desde
+			piezas[filaHasta][columnaHasta].mover();
+			simbolo = piezas[filaHasta][columnaHasta].getSimbolo();		
+		}
+		return simbolo;
 	}
 	
 	private int[][] controlarMovimientos(int[][] arregloPosibles, StringBuilder desde){ //Controla el movimiento en las 8 direcciones para que no atraviese otra pieza
 		
-		int dx = 0, dy = 0;
+		int dx = 0, dy = 0, x = 0, y = 0;
 		boolean flagPiezaEnemiga = false, flagVacio = true, flagPiezaPropia = false;
 		int[][] posiblesControlado = new int[8][8];
 		posiblesControlado = arregloPosibles;
@@ -168,7 +175,7 @@ public class Tablero {
 		
 		for (int i = 0; i < 8; i++) {
 			
-			for (int j = 0; j < 8; j++) {
+			for (int j = 0; j < 8; j++) {		
 				
 				switch(posiblesControlado[filaDesde + dx][columnaDesde + dy]){
 				case -2:posiblesControlado[filaDesde + dx][columnaDesde + dy] = 0; flagVacio = false; break;							//mismo color & no posible 	->NO
@@ -176,7 +183,7 @@ public class Tablero {
 				case  2:posiblesControlado[filaDesde + dx][columnaDesde + dy] = 0;	break;												//libre & no posible		->NO
 				case  3:posiblesControlado[filaDesde + dx][columnaDesde + dy] = 1;	break;												//libre & posible			->SI, solo si hay "3" al origen
 				case  4:posiblesControlado[filaDesde + dx][columnaDesde + dy] = 0; flagVacio = false; flagPiezaEnemiga = true; break;	//enemiga & no posible		->NO
-				case  5:posiblesControlado[filaDesde + dx][columnaDesde + dy] = 1; flagVacio = false; break;							//enemiga & posible			->SI, solo si hay "3" al origen
+				case  5:posiblesControlado[filaDesde + dx][columnaDesde + dy] = 1; flagVacio = false; flagPiezaEnemiga = true; break;	//enemiga & posible			->SI, solo si hay "3" al origen
 				}
 				
 				if((!flagVacio && flagPiezaEnemiga) || (flagPiezaPropia)){
@@ -198,12 +205,52 @@ public class Tablero {
 					j = 8;
 				}
 			}
+									
+			switch(i){	//Para el caballo
+				case 0:			
+					x = 2; y = 1; 
+					break;
+				case 1:
+					x = 2; y = -1;
+					break;
+				case 2:
+					x = -2; y = 1;
+					break;
+				case 3:
+					x = -2; y = -1;
+					break;
+				case 4:
+					x = 1; y = 2;
+					break;
+				case 5:
+					x = -1; y = 2;
+					break;
+				case 6:
+					x = 1; y = -2;
+					break;
+				case 7:
+					x = -1; y = -2;
+					break;					
+				}
 			
+			if ((columnaDesde+y < 8) && (columnaDesde+y > -1) && (filaDesde+x < 8) && (filaDesde+x > -1)) {
+				//Para el caballo
+				if ((posiblesControlado[filaDesde + x][columnaDesde + y] == 3) || (posiblesControlado[filaDesde + x][columnaDesde+ y] == 5)) {
+					posiblesControlado[filaDesde + x][columnaDesde + y] = 1;
+				}
+			}
 			dx = dy = 0;
 			flagPiezaEnemiga = flagPiezaPropia = false; flagVacio = true;
 			
 		}
-			
+		
+		int peon = piezas[filaDesde][columnaDesde].getLado() ? 1 : -1; //Para el peon, no puede mover para adelante si está ocupada
+		
+		if ((piezas[filaDesde][columnaDesde].getSimbolo() == '\u2659') || (piezas[filaDesde][columnaDesde].getSimbolo() == '\u265F')) { 
+			if (piezas[filaDesde + peon][columnaDesde ] != null) { 
+				posiblesControlado[filaDesde + peon][columnaDesde] = 0;
+			}
+		}
 		return posiblesControlado;
 	}
 
@@ -211,6 +258,12 @@ public class Tablero {
 		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
 		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;
 		return piezas[filaDesde][columnaDesde].getLado();
+	}
+
+	public boolean esNulo(StringBuilder desde) {
+		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
+		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;	
+		return piezas[filaDesde][columnaDesde] == null ? true : false;
 	}
 
 }

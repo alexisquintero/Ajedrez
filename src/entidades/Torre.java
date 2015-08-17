@@ -14,7 +14,7 @@ public class Torre extends Pieza {
 	/**Devuelve un Array 8x8 con 1 en las posiciones permitidas para esa pieza, ignorando las demas piezas
 	 * 
 	 */
-	public int[][] movimientosPermitidos(int fila, int columna){
+	public int[][] movimientosPermitidos(int fila, int columna, char comer){
 		
 		//Inicializo el arreglo
 		int[][] arregloPermitidos = new int[8][8];

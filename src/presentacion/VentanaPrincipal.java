@@ -876,15 +876,22 @@ public class VentanaPrincipal {
 			botones.get(desde.toString()).setBackground(Color.RED);		
 //			actualizarTablero(ca.getMovimientosPosibles(desde));
 			movimientosPosibles = ca.getMovimientosPosibles(desde, lado);
-			if(movimientosPosibles == null){
-				txtInfo.setText("Le toca al otro jugador"); //TODO: controlar quien juega
+			if(movimientosPosibles.length == 1){	//No deja mover desde una posición sin pieza
+				botones.get(desde.toString()).setBackground(colorDesde);
+				desde.delete(0, 2);
+				estado = 0;
+				break;
+			}
+			if(movimientosPosibles.length == 2){
+				txtInfo.setText("Le toca al otro jugador"); 
+				botones.get(desde.toString()).setBackground(colorDesde);
 				desde.delete(0, 2);
 				estado = 0;
 			}else{
 				actualizarTablero(movimientosPosibles);
 			}			
 			break;
-			
+		
 		case 2:
 			hasta.append(e.getActionCommand());	
 			if(desde.toString().equals(hasta.toString())){	//Si hago click en la misma posición se cancela el movimiento
@@ -899,14 +906,20 @@ public class VentanaPrincipal {
 			int columnaHasta = Character.getNumericValue(hasta.charAt(0))-10;
 			int filaHasta = Character.getNumericValue(hasta.charAt(1))-1;
 			if(movimientosPosibles[filaHasta][columnaHasta] == 1){ //Controla que hasta sea una posición dentro de las permitidas por array de movimientos posibles
-				actualizarTablero(ca.movimiento(desde, hasta), desde, hasta);
-				botones.get(desde.toString()).setBackground(colorDesde);
-				estado = 0;		
-				lado = lado ? false : true;
-				desde.delete(0, 2);
-				if(txtInfo.getText().length() != 0){
-					txtInfo.setText("");
-				}				
+				char pieza = ca.movimiento(desde, hasta);
+				if(pieza == 'F'){
+					String texto = lado ? "Blancas ganan" : "Negras ganan";
+					txtInfo.setText(texto);
+				}else{
+					actualizarTablero(pieza, desde, hasta);
+					botones.get(desde.toString()).setBackground(colorDesde);
+					estado = 0;		
+					lado = lado ? false : true;
+					desde.delete(0, 2);
+					if(txtInfo.getText().length() != 0){
+						txtInfo.setText("");
+					}
+				}
 			}else{
 				txtInfo.setText("Movimiento ilegal");				
 			}
