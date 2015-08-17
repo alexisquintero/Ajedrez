@@ -18,7 +18,7 @@ public class Peon extends Pieza {
 	/**Devuelve un Array 8x8 con 1 en las posiciones permitidas para esa pieza, ignorando las demas piezas
 	 * 
 	 */
-	public int[][] movimientosPermitidos(int fila, int columna){
+	public int[][] movimientosPermitidos(int fila, int columna, char comer){
 		
 		//Inicializo el arreglo
 		int[][] arregloPermitidos = new int[8][8];
@@ -28,8 +28,22 @@ public class Peon extends Pieza {
 			}
 		} 
 		
-		int x = columna;
+		int x = columna; //Al revez son
 		int y = fila;
+		
+		if(lado){		
+			switch(comer){
+			case 'A':arregloPermitidos[x+1][y+1] = 1; arregloPermitidos[x+1][y-1] = 1;break;
+			case 'I':arregloPermitidos[x+1][y-1] = 1;break;
+			case 'D':arregloPermitidos[x+1][y+1] = 1;break;
+			}
+		}else{
+			switch(comer){
+			case 'A':arregloPermitidos[x-1][y+1] = 1; arregloPermitidos[x-1][y-1] = 1;break;
+			case 'I':arregloPermitidos[x-1][y-1] = 1;break;
+			case 'D':arregloPermitidos[x-1][y+1] = 1;break;
+			}
+		}	
 		
 		if(lado){
 			x += 1;// y += 1;

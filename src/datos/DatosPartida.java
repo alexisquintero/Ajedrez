@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import entidades.*;
+import excepciones.ApplicationException;
 
 
 public class DatosPartida {
@@ -21,12 +22,13 @@ public class DatosPartida {
 	 * 
 	 * @param p
 	 * @return Devuelve un String con los datos del proceso
+	 * @throws ApplicationException 
 	 */
-	public String nuevaPartida(Partida p){
+	public void nuevaPartida(Partida p) throws ApplicationException{
 		
 		Jugador j1 = p.getBlancas();
 		Jugador j2 = p.getNegras();
-		String resp = "";
+//		String resp = "";
 		String movimientos = "";
 	
 		try{								
@@ -43,7 +45,7 @@ public class DatosPartida {
 			
 			//Actualiza p y crea la respuesta
 			p.setIdPartida(rsl.getInt(1));	
-			resp = "Juego número " + String.valueOf(rsl.getInt(1)) + " creado"; 
+//			resp = "Juego número " + String.valueOf(rsl.getInt(1)) + " creado"; 
 			
 			//Crea asociación en la tabla jugador-partida
 			String query2 = "INSERT INTO jugador-partida(idJuego, idBlancas, idNegras) VALUES (?, ?, ?)";
@@ -58,19 +60,20 @@ public class DatosPartida {
 		}
 		catch(SQLException e){
 			
-			resp = e.getMessage();
+//			resp = e.getMessage();
+			throw new ApplicationException("Error al actualizar datos de persona", e);
 			
 		}
 		finally{			
 			sql.Close(rsl, stm, myConn);			
 		}							
 	
-		return resp;
+//		return resp;
 
 	}
 	
-	public String actualizaPartida(Partida p){
-		String resp = "Partida actualizada";
+	public void actualizaPartida(Partida p) throws ApplicationException{
+//		String resp = "Partida actualizada";
 		
 		try {
 				myConn = sql.Connect();
@@ -78,17 +81,18 @@ public class DatosPartida {
 			
 				pstm = myConn.prepareStatement(query);
 				
-				pstm.setString(1, p.getMovimientos().toString());
+//				pstm.setString(1, p.getMovimientos().toString());
 			
 				pstm.executeUpdate();                      
 			
 		} catch (SQLException e) {
-			resp = e.getMessage();
+//			resp = e.getMessage();
+			throw new ApplicationException("Error al actualizar datos de persona", e);
 		} finally{
 			sql.Close(rsl, stm, myConn);
 		}
 		
-		return resp;
+//		return resp;
 	}
 
 }

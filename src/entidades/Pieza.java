@@ -41,6 +41,10 @@ public class Pieza {
 	
 	protected boolean sinMover = true; //Me interesa en peon para en passant, y en torre y rey para enroque
 	
+	public void mover(){
+		sinMover = false;
+	}
+	
 	protected char simbolo;  //Simbolo unicode de la pieza
 	
 	public char getSimbolo() {
@@ -62,7 +66,7 @@ public class Pieza {
 	/**Devuelve un Array 8x8 con 1 en las posiciones permitidas para esa pieza, ignorando las demas piezas
 	 * 
 	 */
-	public int[][] movimientosPermitidos(int columna, int fila){
+	public int[][] movimientosPermitidos(int columna, int fila, char comer){  //Comer sirve para los peones solamente
 		
 		int[][] arregloPermitidos = new int[8][8];
 			for(int m = 0; m < 8; m++){

@@ -36,21 +36,25 @@ public class Partida {
 		this.idPartida = idPartida;
 	}
 	
-	private StringBuffer movimientos;
-	public StringBuffer getMovimientos() {
-		return movimientos;
-	}
-	public void setMovimientos(StringBuffer movimientos) {
-		this.movimientos = movimientos;
-	}
+	private boolean turno = true; //Empiezan blancas
+	
 	public char[][] Posiciones() {		
 		return tablero.Posiciones();
 	}
 	public char movimiento(StringBuilder desde, StringBuilder hasta) {
-		return tablero.movimiento(desde, hasta);
+		turno = turno ? false : true;
+		return tablero.movimiento(desde, hasta);		
 	}
-	public int[][] movimientosPosibles(StringBuilder desde) {
-		return tablero.movimientosPosibles(desde);
+	public int[][] movimientosPosibles(StringBuilder desde, boolean lado) {
+		if(tablero.getLado(desde) == lado){
+			if(turno == lado){
+				return tablero.movimientosLegales(tablero.movimientosPosibles(desde), lado, desde);
+			}else{
+				return null;
+			}
+		}else{
+			return null;
+		}
 	}
 	
 }

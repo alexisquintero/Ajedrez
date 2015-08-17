@@ -1,6 +1,7 @@
 package datos;
 
 import entidades.*;
+import excepciones.ApplicationException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,8 +21,9 @@ public class DatosJugador {
 	/**Crea un nuevo usuario, devuelve un String con los datos del proceso
 	 * 
 	 * @param u Objeto usuario con los datos a guardar
+	 * @throws ApplicationException 
 	 */
-	public String creaUsuario(Jugador j){
+	public String creaUsuario(Jugador j) throws ApplicationException{
 		
 		String resp = "Usuario " + j.getNick() + " creado";
 		try{
@@ -47,6 +49,7 @@ public class DatosJugador {
 		catch(SQLException e){
 			
 			resp = e.getMessage();
+			throw new ApplicationException("Error al actualizar datos de persona", e);
 			
 		}
 		finally{			
@@ -62,24 +65,28 @@ public class DatosJugador {
 	 * @param nick
 	 * @throws SQLException 
 	 */
-	public Jugador buscaJugador(String nick) throws SQLException{
+	public Jugador buscaJugador(String DNI) throws ApplicationException{
 	
 		Jugador ju = null;
 		
 		myConn = sql.Connect();
-		String query = "SELECT * FROM usuario WHERE ( nick = " + nick + " )";
+		String query = "SELECT * FROM usuario WHERE ( dni = " + DNI + " )";
 			
-		pstm = myConn.prepareStatement(query);
-			 
-		rsl = stm.executeQuery(query);
-		while(rsl.next()){
-			ju = new Jugador();
-			
-			ju.setNick(rsl.getString("nick"));
-			ju.setGanadas(rsl.getInt("ganadas"));
-			ju.setPerdidas(rsl.getInt("perdidas"));
-			ju.setAbandonadas(rsl.getInt("abandonadas"));
-			ju.setId(rsl.getInt("idJugador"));
+		try {
+			pstm = myConn.prepareStatement(query);
+				 
+			rsl = stm.executeQuery(query);
+			while(rsl.next()){
+				ju = new Jugador();
+				
+				ju.setNick(rsl.getString("nick"));
+				ju.setGanadas(rsl.getInt("ganadas"));
+				ju.setPerdidas(rsl.getInt("perdidas"));
+				ju.setAbandonadas(rsl.getInt("abandonadas"));
+				ju.setId(rsl.getInt("idJugador"));
+			}
+		} catch (SQLException e) {
+			throw new ApplicationException("Error al actualizar datos de persona", e);
 		}
 		
 		return ju;

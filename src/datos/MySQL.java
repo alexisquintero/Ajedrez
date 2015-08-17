@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import excepciones.ApplicationException;
+
 
 
 public class MySQL {
@@ -26,16 +28,21 @@ public class MySQL {
 		
 	}
 	 
-	 public Connection Connect() throws SQLException{   
+	 public Connection Connect() throws ApplicationException{   
 		 
 		 Connection conn = null;
 			 
-			 String url = "jdbc:mysql://201.212.117.27:3306/Ajedrez";		
+			 String url = "jdbc:mysql://201.212.117.27:1433/Ajedrez";	
+//			 String url = "jdbc:mysql://localhost:3306/Ajedrez";	
 			 String user = "Java";
 			 String password = "Java";
 //TODO: Usar la url, user y password desde un .ini
 		 
-			 conn = DriverManager.getConnection(url, user, password);
+			 try {
+				conn = DriverManager.getConnection(url, user, password);
+			} catch (SQLException e) {
+				throw new ApplicationException("Error al actualizar datos de persona", e);
+			}
 			 
 		 return conn;
 	 }
@@ -64,22 +71,22 @@ public class MySQL {
 /*
  
 	Base de datos			->	Ajedrez
-	Usuario					->	Ajedrez
+	Usuario					->	Java
 	Password				->	Java
 	IP						->	201.212.117.27
 		Jugador
-			idJugador		->	int						->clave primaria
+			dni				->	char(8)					->clave primaria
 			nick			->	char(20)				
-			pass			->	char(20)
 			ganadas			->	int
-			perdidas		->	int
-			abandonadas(?)	->	int
+			perdidas		->	int			
+			empatadas		->	int
 		Partida
 			idPartida		->	int(Autoincremental)	->Clave primaria
-			movimientos		->	varchar
+			tablero			->	varchar
 		Jugador-Partida
-			idJuego			->	int	
-			idBlancas		->	int
-			IdNegras		->	int
+			idJuego			->	int(Autoincremental)	->Clave primaria
+			idBlancas		->	char(8)
+			idNegras		->	char(8)
+			idPartida		->	int	
 					
 */

@@ -13,14 +13,23 @@ import javax.swing.JFrame;
 import negocio.ControladorAjedrez;
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
+import java.awt.BorderLayout;
+
+import javax.swing.JTextField;
+
+import java.awt.GridBagLayout;
 
 public class VentanaPrincipal {
 	
@@ -31,11 +40,18 @@ public class VentanaPrincipal {
 	
 	private StringBuilder desde = new StringBuilder();
 	private StringBuilder hasta = new StringBuilder();
-//	private static ArrayList<JButton> botones = new ArrayList<JButton>();
 	private static HashMap<String, JButton> botones = new HashMap<String, JButton>();
 	private Color colorDesde;
+	private int[][] movimientosPosibles = new int[8][8];
+	private boolean mostrarPosibles = false;
+	private boolean lado = true;	//Empiezan blancas
 
 	private JFrame frame;
+	private JTextField txtInfo;
+	private JTextField txtNickNegras;
+	private JTextField txtNickBlancas;
+	private JTextField txtNegrasComidas;
+	private JTextField txtBlancasComidas;
 
 	/**
 	 * Launch the application.
@@ -784,18 +800,56 @@ public class VentanaPrincipal {
 		
 		JPanel panelJugador2 = new JPanel();
 		frame.getContentPane().add(panelJugador2, "cell 1 0,grow");
+		panelJugador2.setLayout(new BorderLayout(0, 0));
+		
+		txtNickNegras = new JTextField();
+		txtNickNegras.setEditable(false);
+		panelJugador2.add(txtNickNegras, BorderLayout.CENTER);
+		txtNickNegras.setColumns(10);
 		
 		JPanel panelComidas2 = new JPanel();
 		frame.getContentPane().add(panelComidas2, "cell 1 1,grow");
+		panelComidas2.setLayout(new BorderLayout(0, 0));
+		
+		txtNegrasComidas = new JTextField();
+		txtNegrasComidas.setEditable(false);
+		panelComidas2.add(txtNegrasComidas, BorderLayout.CENTER);
+		txtNegrasComidas.setColumns(10);
 		
 		JPanel panelInformacionAdicional = new JPanel();
 		frame.getContentPane().add(panelInformacionAdicional, "cell 1 2,grow");
+		panelInformacionAdicional.setLayout(new BorderLayout(0, 0));
+		
+		txtInfo = new JTextField();
+		txtInfo.setEditable(false);
+		panelInformacionAdicional.add(txtInfo, BorderLayout.CENTER);
+		txtInfo.setColumns(10);
+		
+		JButton btnOpciones = new JButton("Opciones");
+		btnOpciones.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {			
+				clickOpciones();				
+			}
+		});
+		panelInformacionAdicional.add(btnOpciones, BorderLayout.SOUTH);
 		
 		JPanel panelComidas1 = new JPanel();
 		frame.getContentPane().add(panelComidas1, "cell 1 3,grow");
+		panelComidas1.setLayout(new BorderLayout(0, 0));
+		
+		txtBlancasComidas = new JTextField();
+		txtBlancasComidas.setEditable(false);
+		panelComidas1.add(txtBlancasComidas, BorderLayout.CENTER);
+		txtBlancasComidas.setColumns(10);
 		
 		JPanel panelJugador1 = new JPanel();
 		frame.getContentPane().add(panelJugador1, "cell 1 4,grow");
+		panelJugador1.setLayout(new BorderLayout(0, 0));
+		
+		txtNickBlancas = new JTextField();
+		txtNickBlancas.setEditable(false);
+		panelJugador1.add(txtNickBlancas, BorderLayout.CENTER);
+		txtNickBlancas.setColumns(10);
 		
 		botones.put("A1",btnA1);botones.put("B1",btnB1);botones.put("C1",btnC1);botones.put("D1",btnD1);botones.put("E1",btnE1);botones.put("F1",btnF1);botones.put("G1",btnG1);botones.put("H1",btnH1);
 		botones.put("A2",btnA2);botones.put("B2",btnB2);botones.put("C2",btnC2);botones.put("D2",btnD2);botones.put("E2",btnE2);botones.put("F2",btnF2);botones.put("G2",btnG2);botones.put("H2",btnH2);
@@ -820,23 +874,43 @@ public class VentanaPrincipal {
 			estado = 2;
 			colorDesde = botones.get(desde.toString()).getBackground();
 			botones.get(desde.toString()).setBackground(Color.RED);		
-			actualizarTablero(ca.getMovimientosPosibles(desde));
+//			actualizarTablero(ca.getMovimientosPosibles(desde));
+			movimientosPosibles = ca.getMovimientosPosibles(desde, lado);
+			if(movimientosPosibles == null){
+				txtInfo.setText("Le toca al otro jugador"); //TODO: controlar quien juega
+				desde.delete(0, 2);
+				estado = 0;
+			}else{
+				actualizarTablero(movimientosPosibles);
+			}			
 			break;
 			
 		case 2:
 			hasta.append(e.getActionCommand());	
 			if(desde.toString().equals(hasta.toString())){	//Si hago click en la misma posición se cancela el movimiento
+				txtInfo.setText("");
 				botones.get(desde.toString()).setBackground(colorDesde);
 				hasta.delete(0, 2);
 				desde.delete(0, 2);
 				estado = 0;
+				despintarTablero();
 				break;
 			}
-			actualizarTablero(ca.movimiento(desde, hasta), desde, hasta);
-			botones.get(desde.toString()).setBackground(colorDesde);
-			estado = 0;
+			int columnaHasta = Character.getNumericValue(hasta.charAt(0))-10;
+			int filaHasta = Character.getNumericValue(hasta.charAt(1))-1;
+			if(movimientosPosibles[filaHasta][columnaHasta] == 1){ //Controla que hasta sea una posición dentro de las permitidas por array de movimientos posibles
+				actualizarTablero(ca.movimiento(desde, hasta), desde, hasta);
+				botones.get(desde.toString()).setBackground(colorDesde);
+				estado = 0;		
+				lado = lado ? false : true;
+				desde.delete(0, 2);
+				if(txtInfo.getText().length() != 0){
+					txtInfo.setText("");
+				}				
+			}else{
+				txtInfo.setText("Movimiento ilegal");				
+			}
 			hasta.delete(0, 2);
-			desde.delete(0, 2);
 			
 			break;
 
@@ -869,18 +943,42 @@ public class VentanaPrincipal {
 	
 	private void actualizarTablero(int[][] arregloPermitidos){
 		StringBuilder nombre = new StringBuilder();
-		for (char i = 'A'; i < 'I'; i++) {
-			for (int j = 1; j < 9; j++) {
-//				System.out.println(arregloPermitidos[Character.getNumericValue(i)-10][j-1]);
-//				if(arregloPermitidos[Character.getNumericValue(i)-10][j-1] == 1){
-				if(arregloPermitidos[j-1][Character.getNumericValue(i)-10] == 1){
-					nombre.delete(0, 2);
-					nombre.append("" + i + j);
-//					botones.get(nombre.toString()).getBackground();
-					botones.get(nombre.toString()).setBackground(Color.YELLOW);
+		if (mostrarPosibles) {
+			for (char i = 'A'; i < 'I'; i++) {
+				for (int j = 1; j < 9; j++) {
+					if (arregloPermitidos[j - 1][Character.getNumericValue(i) - 10] == 1) {
+						nombre.delete(0, 2);
+						nombre.append("" + i + j);
+						botones.get(nombre.toString()).setBackground(
+								Color.YELLOW);
+					}
 				}
 			}
 		}
+	}
+	
+	private void despintarTablero(){
+		
+	}
+	
+	private void clickOpciones(){
+		JTextField xField = new JTextField(5);
+	    JTextField yField = new JTextField(5);
+	
+		JPanel myPanel = new JPanel();
+	    myPanel.add(new JLabel("Mostrar movimientos posibles(S/N):"));
+	    myPanel.add(xField);
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+//	    myPanel.add(new JLabel("y:"));
+//	    myPanel.add(yField);
+
+	    int result = JOptionPane.showConfirmDialog(null, myPanel, 
+	             "Opciones", JOptionPane.OK_CANCEL_OPTION);
+	    if (result == JOptionPane.OK_OPTION) {
+	    	mostrarPosibles = xField.getText().equals("S")?true:false;
+//	       System.out.println("x value: " + xField.getText());
+//	       System.out.println("y value: " + yField.getText());
+	    }
 	}
 	
 	public static void setUIFont (javax.swing.plaf.FontUIResource f){	//Cambia el tamaño de los caracteres de los botones
@@ -903,6 +1001,7 @@ public class VentanaPrincipal {
 				botones.get(nombre.toString()).setFocusPainted(false);
 			}									
 		}
+		
 	}
 //TODO: para despintar el amarillo guardar una máscara con los colores default de cada cuadro y guardar el array de movimientos posibles como variable global si se necesita
 }
