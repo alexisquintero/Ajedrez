@@ -41,9 +41,9 @@ public class Partida {
 	public char[][] Posiciones() {		
 		return tablero.Posiciones();
 	}
-	public char movimiento(StringBuilder desde, StringBuilder hasta) {		
-		char pieza = tablero.movimiento(desde, hasta);
-		if(pieza == 'F'){
+	public char[] movimiento(StringBuilder desde, StringBuilder hasta) {		
+		char[] pieza = tablero.movimiento(desde, hasta);
+		if(pieza[0] == 'F'){
 			if(turno){
 				//sumar una victoria a blancas y finalizar partida
 			}else{
@@ -68,6 +68,11 @@ public class Partida {
 		}else{
 			return new int[1][1];
 		}
+	}
+	public char promocion(String string) {
+		boolean lado = turno ? false : true; //debido a que ya se hizo el movimiento
+		return tablero.promocion(string, lado);
+		
 	}
 	
 }

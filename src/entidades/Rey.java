@@ -63,6 +63,11 @@ public class Rey extends Pieza {
 						arregloPermitidos[x][y] = 1;
 					}
 				}	
+			
+			if(sinMover){	//Para enroque
+				arregloPermitidos[columna][fila + 2] = 1;
+				arregloPermitidos[columna][fila - 2] = 1;
+			}
 
 		return arregloPermitidos;
 	}

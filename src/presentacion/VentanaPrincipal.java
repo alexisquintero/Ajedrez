@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 
 
 
+
 import java.awt.Font;
 
 import javax.swing.JFrame;
@@ -14,11 +15,13 @@ import negocio.ControladorAjedrez;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.JRadioButton;
 
 import java.awt.GridLayout;
 import java.awt.Color;
@@ -28,8 +31,6 @@ import java.util.HashMap;
 import java.awt.BorderLayout;
 
 import javax.swing.JTextField;
-
-import java.awt.GridBagLayout;
 
 public class VentanaPrincipal {
 	
@@ -44,7 +45,7 @@ public class VentanaPrincipal {
 	private Color colorDesde;
 	private int[][] movimientosPosibles = new int[8][8];
 	private boolean mostrarPosibles = false;
-	private boolean lado = true;	//Empiezan blancas
+	private static boolean lado = true;	//Empiezan blancas
 
 	private JFrame frame;
 	private JTextField txtInfo;
@@ -906,12 +907,20 @@ public class VentanaPrincipal {
 			int columnaHasta = Character.getNumericValue(hasta.charAt(0))-10;
 			int filaHasta = Character.getNumericValue(hasta.charAt(1))-1;
 			if(movimientosPosibles[filaHasta][columnaHasta] == 1){ //Controla que hasta sea una posición dentro de las permitidas por array de movimientos posibles
-				char pieza = ca.movimiento(desde, hasta);
-				if(pieza == 'F'){
+				char[] pieza = ca.movimiento(desde, hasta);
+				if(pieza[0] == 'F'){
 					String texto = lado ? "Blancas ganan" : "Negras ganan";
 					txtInfo.setText(texto);
+				}else if(pieza[0] == 'P'){
+					pieza[0] = promocion();
+					txtInfo.setText("Promoción");
+					actualizarTablero(pieza[0], desde, hasta, '\u0000');  //Cambiar pieza por lo que devuelva promocion
+					botones.get(desde.toString()).setBackground(colorDesde);
+					estado = 0;		
+					lado = lado ? false : true;
+					desde.delete(0, 2);
 				}else{
-					actualizarTablero(pieza, desde, hasta);
+					actualizarTablero(pieza[0], desde, hasta, '\u0000');
 					botones.get(desde.toString()).setBackground(colorDesde);
 					estado = 0;		
 					lado = lado ? false : true;
@@ -919,6 +928,31 @@ public class VentanaPrincipal {
 					if(txtInfo.getText().length() != 0){
 						txtInfo.setText("");
 					}
+				}
+				if(pieza[1] != '\u0000'){
+					StringBuilder desde1 = new StringBuilder();
+					StringBuilder hasta1 = new StringBuilder();
+					if(pieza[2] == '0'){	//Lado blancas	1 + ?
+						if(pieza[3] == '3'){	//Izquierda ? + A			3 derecha 5 izquierda ? NO
+							desde1.append("A1");
+						}else if(pieza[3] == '5'){				//Derecha ? + H
+							desde1.append("H1");
+						}			
+					}else if(pieza[2] == '7'){					//Lado negras 8 + ?
+						if(pieza[3] == '3'){	//Izquierda ? + A
+							desde1.append("A8");
+						}else if(pieza[3] == '5'){				//Derecha ? + H
+							desde1.append("H8");
+						}
+					}
+					
+					switch(desde1.toString()){
+					case "A1": hasta1.append("D1"); break;
+					case "A8": hasta1.append("D8"); break;
+					case "H1": hasta1.append("F1"); break;
+					case "H8": hasta1.append("F8"); break;
+					}
+					actualizarTablero(pieza[1], desde1, hasta1, 'E'); 
 				}
 			}else{
 				txtInfo.setText("Movimiento ilegal");				
@@ -939,18 +973,31 @@ public class VentanaPrincipal {
 		
 		char[][] posicion = ca.inicializarTablero();
 		StringBuilder nombre = new StringBuilder();
+		Color color = Color.WHITE;
 	
 		for (char i = 'A'; i < 'I'; i++) {
 			for (int j = 1; j < 9; j++) {
 				nombre.delete(0, 2);	
 				nombre.append("" + i + j);
+				if((j == 1) || (j == 2)){
+					color = Color.WHITE;
+				}
+				if((j == 7) || (j == 8)){
+					color = Color.BLACK;
+				}
+				botones.get(nombre.toString()).setForeground(color);
 				botones.get(nombre.toString()).setText(Character.toString(posicion[j-1][Character.getNumericValue(i)-10]));
 			}									
 		}
 	}
 	
-	private void actualizarTablero(char movimiento, StringBuilder desde, StringBuilder hasta){
+	private void actualizarTablero(char movimiento, StringBuilder desde, StringBuilder hasta, char enroque){
 		botones.get(desde.toString()).setText(Character.toString('\u0000'));
+		Color color = lado ? Color.WHITE : Color.BLACK;
+		if(enroque != '\u0000'){
+			color = !lado ? Color.WHITE : Color.BLACK;
+		}	
+		botones.get(hasta.toString()).setForeground(color);
 		botones.get(hasta.toString()).setText(Character.toString(movimiento));
 	}
 	
@@ -962,8 +1009,7 @@ public class VentanaPrincipal {
 					if (arregloPermitidos[j - 1][Character.getNumericValue(i) - 10] == 1) {
 						nombre.delete(0, 2);
 						nombre.append("" + i + j);
-						botones.get(nombre.toString()).setBackground(
-								Color.YELLOW);
+						botones.get(nombre.toString()).setBackground(Color.YELLOW);
 					}
 				}
 			}
@@ -976,7 +1022,7 @@ public class VentanaPrincipal {
 	
 	private void clickOpciones(){
 		JTextField xField = new JTextField(5);
-	    JTextField yField = new JTextField(5);
+//	    JTextField yField = new JTextField(5);
 	
 		JPanel myPanel = new JPanel();
 	    myPanel.add(new JLabel("Mostrar movimientos posibles(S/N):"));
@@ -1015,6 +1061,54 @@ public class VentanaPrincipal {
 			}									
 		}
 		
+	}
+	
+	private char promocion(){
+	    
+	    char alfil, torre, caballo, reina;
+	    
+	    if(lado){
+	    	alfil = '\u2657';
+	    	torre = '\u2656';
+	    	caballo = '\u2658';
+	    	reina = '\u2655';
+	    }else{
+	    	alfil = '\u265D';
+	    	torre = '\u265C';
+	    	caballo = '\u265E';
+	    	reina = '\u265B';
+	    }
+	    
+	    JRadioButton rbAlfil = new JRadioButton(Character.toString(alfil));
+	    JRadioButton rbTorre = new JRadioButton(Character.toString(torre));
+	    JRadioButton rbCaballo = new JRadioButton(Character.toString(caballo));
+	    JRadioButton rbReina =  new JRadioButton(Character.toString(reina), true);
+	    
+	    rbAlfil.setActionCommand("Alfil"); rbTorre.setActionCommand("Torre"); rbCaballo.setActionCommand("Caballo"); rbReina.setActionCommand("Reina");
+	    
+	    ButtonGroup group = new ButtonGroup();
+	    
+	    group.add(rbReina); group.add(rbCaballo); group.add(rbTorre); group.add(rbAlfil);
+	    
+		JPanel myPanel = new JPanel();
+	    myPanel.add(new JLabel("Promocionar peon a:"));
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    myPanel.add(rbAlfil);
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    myPanel.add(rbCaballo);
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    myPanel.add(rbTorre);
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    myPanel.add(rbReina);
+	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+	    
+	    String[] options = {"OK"};
+//	    int selectedOption = JOptionPane.showOptionDialog(null, panel, "The Title", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options , options[0]);
+	    int result = JOptionPane.showOptionDialog(null, myPanel,"Opciones", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options , options[0]);
+	    if (result == 0) {
+	    	return ca.promocion(group.getSelection().getActionCommand().toString());    	
+	    }
+	    return 'P';   
 	}
 //TODO: para despintar el amarillo guardar una máscara con los colores default de cada cuadro y guardar el array de movimientos posibles como variable global si se necesita
 }

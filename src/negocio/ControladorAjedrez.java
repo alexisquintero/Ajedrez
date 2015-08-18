@@ -14,7 +14,7 @@ public class ControladorAjedrez {
 	private Jugador jugador1 = new Jugador();
 	private Jugador jugador2 = new Jugador();
 	
-	public char movimiento(StringBuilder desde, StringBuilder hasta){
+	public char[] movimiento(StringBuilder desde, StringBuilder hasta){
 		return partida.movimiento(desde, hasta);
 	}
 	
@@ -41,6 +41,11 @@ public class ControladorAjedrez {
 //		jugadores[1] = datosJugador.buscaJugador(Negras);
 		jugadores.add(datosJugador.buscaJugador(Negras));
 		return jugadores;
+	}
+
+	public char promocion(String string) {
+		return partida.promocion(string);
+		
 	}
 
 }

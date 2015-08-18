@@ -2,31 +2,6 @@ package entidades;
 
 public class Pieza {
 
-/*
-          __    __    __    __
-       8 /__////__////__////__////
-	  7 ////__////__////__////__/
-	 6 /__////__////__////__////
-    5 ////__////__////__////__/
-   4 /__////__////__////__////
-  3 ////__////__////__////__/
- 2 /__////__////__////__////
-1 ////__////__////__////__/
-   a  b  c  d  e  f  g  h
-*/
-	/**[fila columna] Ej: 8a, 5d
-	 * 
-	 */
-/*	
-	protected char[] posicion;	
-	public char[] getPosicion() {
-		return posicion;
-	}
-
-	public void setPosicion(char[] posicion) {
-		this.posicion = posicion;
-	}
-*/	
 	// True == blancas; False == negras
 	protected boolean lado;
 	public boolean getLado() {
@@ -41,6 +16,10 @@ public class Pieza {
 	
 	protected boolean sinMover = true; //Me interesa en peon para en passant, y en torre y rey para enroque
 	
+	public boolean isSinMover() {
+		return sinMover;
+	}
+
 	public void mover(){
 		sinMover = false;
 	}
@@ -85,24 +64,7 @@ public class Pieza {
 	 */
 	
 	public void mueve(){
-		
+		sinMover = true;
 	}
-	
-	/**
-	 * 
-	 */
-	public void comer(){
-		
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void comida(){
-		
-	}
-	
-	
 
 }
