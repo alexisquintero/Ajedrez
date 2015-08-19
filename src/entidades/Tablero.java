@@ -4,8 +4,9 @@ public class Tablero {
 	
 	private Pieza[][] piezas = new Pieza[8][8];
 	private int columnaHasta, filaHasta;
-	private int[][] flagEnroque = new int[2][2]; 	//Indica que torre hay que mover en caso de enroque
-													//Primera posicion para el color (1 = blancas) y segunda para lado (1 = derecha)
+//	private int[][] flagEnroque = new int[2][2]; 	//Indica que torre hay que mover en caso de enroque
+	private boolean flagEnroque = false;			//Primera posicion para el color (1 = blancas) y segunda para lado (1 = derecha)
+	private boolean flagEnroqueLado = false;
 	
 	public Tablero(){
 		
@@ -184,28 +185,25 @@ public class Tablero {
 			simbolo[0] = 'P';
 		}
 		
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 2; j++) {
-					if(flagEnroque[i][j] == 1){
-						flagEnroque[i][j] = 0;
-						i = i == 1 ? 0 : 7;
-						j = j == 0 ? 0 : 7;
-						piezas[i][j] = null;
-						boolean lado = i == 0 ? true : false;
-						int dj = j == 0 ? 3 : -2;
-							
-						piezas[i][j + dj] = new Torre(lado); 
-						simbolo[1] = piezas[i][j + dj].getSimbolo();
-						simbolo[2] = Integer.toString(i).toCharArray()[0];
-						simbolo[3] = Integer.toString(j + dj).toCharArray()[0];
-						break;
-//						i = j = 10;			Para romper el enroque
-				}				
+		if(flagEnroque){
+			flagEnroque = false;
+			int ix = flagEnroqueLado ? 0 : 7;	//Blancas 0 Negras 7
+			int jx =  columnaHasta == 2 ? 0 : 7;	//Izquierda 0 Derecha 7
+			piezas[ix][jx] = null;
+
+			int dj = 0;
+			if(columnaHasta == 2){ //Izquierda
+				dj = 3;
+			}else if(columnaHasta == 6){
+				dj = -2;
 			}
-		}
-		
-		
-		
+				
+			piezas[ix][jx + dj] = new Torre(flagEnroqueLado); 
+			simbolo[1] = piezas[ix][jx + dj].getSimbolo();
+			simbolo[2] = Integer.toString(ix).toCharArray()[0];
+			simbolo[3] = Integer.toString(jx + dj).toCharArray()[0];
+		}			
+				
 		return simbolo;
 	}
 	
@@ -323,7 +321,7 @@ public class Tablero {
 						
 					}
 				}
-				if((!flagLibre) || (flagJaque)){  //El rey en jaque
+				if((!flagLibre) || (flagJaque)){  //El rey en jaque										
 					
 					if(de == 3){
 						de -= 1;
@@ -332,22 +330,15 @@ public class Tablero {
 					}
 					arregloPosibles[filaDesde][columnaDesde + de] = 0;
 				}else if((flagLibre) && (!flagJaque)){
-					if(filaDesde == 0){  //Lado blancas			
-						if(columnaHasta == 2){	//Izquierda
-							flagEnroque[1][0] = 1;	//Primera posicion para el color (1 = blancas) y segunda para lado (1 = derecha)
-						}else{	//Derecha
-							flagEnroque[1][1] = 1;
-						}
-					}else{  //Lado negras
-						if(columnaHasta == 2){	//Izquierda
-							flagEnroque[0][0] = 1;
-						}else{	//Derecha
-							flagEnroque[0][1] = 1;
-						}
+					flagEnroque = true;
+					if(filaDesde == 0){  //Lado blancas	
+						flagEnroqueLado = true;
+					}else if(filaDesde == 7){  //Lado negras
+						flagEnroqueLado = false;																	
 					}
 				}
 			}
-		}
+		}					
 		
 		
 		int peon = piezas[filaDesde][columnaDesde].getLado() ? 1 : -1; //Para el peon, no puede mover para adelante si está ocupada
