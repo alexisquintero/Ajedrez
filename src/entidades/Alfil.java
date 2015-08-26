@@ -28,6 +28,7 @@ public class Alfil extends Pieza {
 				arregloPermitidos[m][n] = 0;
 			}
 		}
+
 		
 		//Como máximo 4 posibilidades de movimiento
 		for(int i=0; i < 4; i++){

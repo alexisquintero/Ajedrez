@@ -14,6 +14,46 @@ public class Tablero{
 	}
 
 	private int columnaHasta, filaHasta;
+	public int getColumnaHasta() {
+		return columnaHasta;
+	}
+
+	public void setColumnaHasta(int columnaHasta) {
+		this.columnaHasta = columnaHasta;
+	}
+
+	public int getFilaHasta() {
+		return filaHasta;
+	}
+
+	public void setFilaHasta(int filaHasta) {
+		this.filaHasta = filaHasta;
+	}
+
+	public boolean isFlagEnroque() {
+		return flagEnroque;
+	}
+
+	public void setFlagEnroque(boolean flagEnroque) {
+		this.flagEnroque = flagEnroque;
+	}
+
+	public boolean isFlagEnroqueLado() {
+		return flagEnroqueLado;
+	}
+
+	public void setFlagEnroqueLado(boolean flagEnroqueLado) {
+		this.flagEnroqueLado = flagEnroqueLado;
+	}
+
+	public void setComidasBlancas(ArrayList<Pieza> comidasBlancas) {
+		this.comidasBlancas = comidasBlancas;
+	}
+
+	public void setComidasNegras(ArrayList<Pieza> comidasNegras) {
+		this.comidasNegras = comidasNegras;
+	}
+
 	private boolean flagEnroque = false;		
 	private boolean flagEnroqueLado = false;
 	private ArrayList<Pieza> comidasBlancas = new ArrayList<Pieza>();

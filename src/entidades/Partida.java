@@ -12,6 +12,7 @@ public class Partida {
 		negras = jugador2;
 		tablero = new Tablero();
 		turno = true;//Empiezan blancas
+		idPartida = -1;
 	}
 	public Jugador getBlancas() {
 		return blancas;

@@ -61,10 +61,12 @@ public class VentanaPrincipal {
 
 	/**
 	 * Launch the application.
+	 * @param ca2 
 	 */
-	public static void main(ArrayList<Jugador> jugadores) {
+	public static void main(ArrayList<Jugador> jugadores, ControladorAjedrez ca2) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				ca = ca2;
 				try {
 					VentanaPrincipal window = new VentanaPrincipal();
 					window.frame.setVisible(true);
@@ -1166,15 +1168,13 @@ public class VentanaPrincipal {
 	    return 'P';   
 	}
 	
-	private static void inicializaJugadores(ArrayList<Jugador> jugadores) {
-		ca.inicializaJugadores(jugadores);
+	private static void inicializaJugadores(ArrayList<Jugador> jugadores) {	
 		txtAyNBlancas.setText(jugadores.get(0).getNombre() + " " + jugadores.get(0).getApellido());
 		txtAyNNegras.setText(jugadores.get(1).getNombre() + " " + jugadores.get(1).getApellido());
 	}
 	
 	private static int incializaPartida() {
 		try {
-//			window.frame.setTitle(String.valueOf(ca.inicializaPartida()));
 			return ca.inicializaPartida();
 		} catch (ApplicationException ae) {
 			JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

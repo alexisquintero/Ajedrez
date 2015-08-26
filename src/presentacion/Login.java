@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 
 import entidades.Jugador;
+import entidades.Partida;
 import excepciones.ApplicationException;
 
 import java.awt.event.ActionListener;
@@ -139,7 +140,7 @@ public class Login {
 		btnJuegoNuevo.setEnabled(false);
 		btnJuegoNuevo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VentanaPrincipal.main(jugadores);			
+				VentanaPrincipal.main(jugadores, ca);			
 			}
 		});
 		frame.getContentPane().add(btnJuegoNuevo, "cell 1 5,grow");
@@ -189,7 +190,11 @@ public class Login {
 			
 			if(!(jugadores.get(0) == null) && !(jugadores.get(1) == null)){
 				btnJuegoNuevo.setEnabled(true);
-				ca.buscaJugadorPartida(jugadores);
+				ca.inicializaJugadores(jugadores);
+				Partida partida = ca.buscaJugadorPartida();
+				if(partida.getIdPartida() != -1){
+					btnContinuar.setEnabled(true);
+				}
 			}
 								
 		} catch (ApplicationException ae) {
@@ -236,7 +241,12 @@ public class Login {
 	}
 	
 	private void clickContinuar() {
-//		ca.continuar(jugadores);
+		try {
+			ca.continuar();
+			VentanaPrincipal.main(jugadores, ca);
+		} catch (ApplicationException ae) {
+			JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
 		
 	}
 

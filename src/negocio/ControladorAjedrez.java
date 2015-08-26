@@ -63,16 +63,15 @@ public class ControladorAjedrez {
 		partida = new Partida(jugadores.get(0),jugadores.get(1));
 	}
 
-	public int inicializaPartida() throws ApplicationException {
-		Serializador serializador = new Serializador();
-		datosPartida.nuevaPartida(partida, serializador.serializar(partida.getTablero().getPiezas()));
+	public int inicializaPartida() throws ApplicationException {		
+		datosPartida.nuevaPartida(partida);
 		return partida.getIdPartida();
 		
 	}
 
-	public Partida buscaJugadorPartida(ArrayList<Jugador> jugadores) throws ApplicationException {
-		return datosJugadorPartida.buscarJugadorPartida(jugadores.get(0).getDni(), jugadores.get(1).getDni());
-		
+	public Partida buscaJugadorPartida() throws ApplicationException {
+//		return datosJugadorPartida.buscarJugadorPartida(jugadores.get(0).getDni(), jugadores.get(1).getDni());
+		return datosJugadorPartida.buscarJugadorPartida(partida);
 	}
 
 	public ArrayList<Pieza> getComidasBlancas() {
@@ -81,6 +80,11 @@ public class ControladorAjedrez {
 
 	public ArrayList<Pieza> getComidasNegras() {
 		return partida.getComidasNegras();
+	}
+
+	public void continuar() throws ApplicationException {
+		datosPartida.buscarPartida(partida);
+		
 	}
 
 }

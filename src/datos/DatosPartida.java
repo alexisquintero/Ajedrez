@@ -1,6 +1,7 @@
 package datos;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,19 +20,20 @@ public class DatosPartida {
 	private PreparedStatement pstm = null;
 	private ResultSet rsl = null;
 	
-	public void nuevaPartida(Partida p, ByteArrayOutputStream byteArrayOutputStream) throws ApplicationException{
+	public void nuevaPartida(Partida p) throws ApplicationException{
 		
 		Jugador j1 = p.getBlancas();
 		Jugador j2 = p.getNegras();
 		
-		try{								
+		try{		
+			Serializador serializador = new Serializador();
+			ByteArrayOutputStream byteArrayOutputStream = serializador.serializar(p);
 			myConn = sql.Connect();	
 			//Crea nueva partida
-			String query = "INSERT INTO partida(tablero, lado) VALUES (?, ?)";
+			String query = "INSERT INTO partida(tablero) VALUES (?)";
 			pstm = myConn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 				 
 			pstm.setBytes(1, byteArrayOutputStream.toByteArray());
-			pstm.setBoolean(2, true);
 			 
 			pstm.executeUpdate();
 			rsl = pstm.getGeneratedKeys();
@@ -39,16 +41,8 @@ public class DatosPartida {
 			
 			p.setIdPartida(rsl.getInt(1));	//Actualiza p 
 			
-			//Crea asociación en la tabla jugador-partida
-			String query2 = "INSERT INTO jugadorPartida(idPartida, dniBlancas, dniNegras) VALUES (?, ?, ?)";
-			pstm = myConn.prepareStatement(query2);
-				 
-			pstm.setString(1, String.valueOf(rsl.getInt(1)));
-			pstm.setInt(2, j1.getDni());
-			pstm.setInt(3, j2.getDni());
-			
-			pstm.executeUpdate();
-			
+			DatosJugadorPartida datosJugadorPartida = new DatosJugadorPartida();
+			datosJugadorPartida.creaJugadorPartida(myConn, rsl.getInt(1), j1.getDni(), j2.getDni());
 														
 		}
 		catch(SQLException e){
@@ -72,7 +66,7 @@ public class DatosPartida {
 			
 				pstm = myConn.prepareStatement(query);
 				
-				pstm.setBytes(1, serializador.serializar(p.getTablero().getPiezas()).toByteArray());
+				pstm.setBytes(1, serializador.serializar(p).toByteArray());
 				pstm.setBoolean(2, p.isTurno());
 			
 				pstm.executeUpdate();                      
@@ -84,12 +78,11 @@ public class DatosPartida {
 		}
 		
 	}
-/*	
-	public void buscarPartida(int id){
-		Partida p = null;
+	
+	public void buscarPartida(Partida partida) throws ApplicationException{
 		
 		myConn = sql.Connect();
-		String query = "SELECT * FROM Partida WHERE ( idPartida = " + id + " )";
+		String query = "SELECT * FROM Partida WHERE ( idPartida = " + partida.getIdPartida() + " )";
 			
 		try {
 			pstm = myConn.prepareStatement(query);
@@ -97,22 +90,14 @@ public class DatosPartida {
 				 
 			rsl = stm.executeQuery(query);
 			while(rsl.next()){
-				
-				
-				
-				p = new Partida();
-				
-				ju.setNombre(rsl.getString("nombre"));
-				ju.setApellido(rsl.getString("apellido"));
-				ju.setDni(rsl.getInt("dni"));
+				Serializador serializador = new Serializador();
+				Blob blob = rsl.getBlob("objeto");
+				serializador.deserializar(partida, blob);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new ApplicationException("Error al buscar jugador", e);
+			throw new ApplicationException("Error al buscar partida", e);
 		}
-		
-		return ju;
 	}
-*/	
 
 }

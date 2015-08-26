@@ -17,11 +17,11 @@ public class DatosJugadorPartida {
 	private PreparedStatement pstm = null;
 	private ResultSet rsl = null;
 	
-	public Partida buscarJugadorPartida(int blancas, int negras) throws ApplicationException{
-		Partida p = null;
+	public Partida buscarJugadorPartida(Partida p) throws ApplicationException{
+//		Partida p = null;
 		
 		myConn = sql.Connect();
-		String query = "SELECT * FROM JugadorPartida WHERE (dniBlancas = " + blancas + " and dniNegras = " + negras + ")";
+		String query = "SELECT * FROM JugadorPartida WHERE (dniBlancas = " + p.getBlancas().getDni() + " and dniNegras = " + p.getNegras().getDni() + ")";
 			
 		try {
 			pstm = myConn.prepareStatement(query);
@@ -42,4 +42,22 @@ public class DatosJugadorPartida {
 	
 	}
 	
+	public void creaJugadorPartida(Connection conn, int idPartida, int dniBlancas, int dniNegras) throws ApplicationException{	
+		try {
+			myConn = conn;
+			String query = "INSERT INTO jugadorPartida(idPartida, dniBlancas, dniNegras) VALUES (?, ?, ?)";
+			pstm = myConn.prepareStatement(query);
+			
+			pstm.setInt(1, idPartida);
+			pstm.setInt(2, dniBlancas);
+			pstm.setInt(3, dniNegras);
+			
+			pstm.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ApplicationException("Error al crear  JugadorPartida", e);
+		}
+			 
+		
+	}
 }
