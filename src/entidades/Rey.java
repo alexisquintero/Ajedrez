@@ -2,6 +2,11 @@ package entidades;
 
 public class Rey extends Pieza {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7031654293599417454L;
+
 	public Rey(boolean L) {
 		super(L);
 		if(L){

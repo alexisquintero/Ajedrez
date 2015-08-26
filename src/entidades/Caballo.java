@@ -2,6 +2,11 @@ package entidades;
 
 public class Caballo extends Pieza {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8322912256237985670L;
+
 	public Caballo(boolean L) {
 		super(L);
 		if(L){

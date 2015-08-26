@@ -1,63 +1,43 @@
 package entidades;
 
-import java.sql.Time;
-
 public class Jugador {
 	
-	private int id;
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
+	private int dni;
+
+
+	public int getDni() {
+		return dni;
 	}
 
-	private String nick;
-	public String getNick() {
-		return nick;
+
+	public void setDni(int dni) {
+		this.dni = dni;
 	}
-	public void setNick(String nick) {
-		this.nick = nick;
+
+
+	public String getNombre() {
+		return nombre;
 	}
+
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+
+	public String getApellido() {
+		return apellido;
+	}
+
+
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+
+	private String nombre;
+
 	
-	private String password;
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	
-	private int ganadas;
-	public int getGanadas() {
-		return ganadas;
-	}
-	public void setGanadas(int ganadas) {
-		this.ganadas = ganadas;
-	}
-	
-	private int perdidas;
-	public int getPerdidas() {
-		return perdidas;
-	}
-	public void setPerdidas(int perdidas) {
-		this.perdidas = perdidas;
-	}
-	
-	private int abandonadas;
-	public int getAbandonadas() {
-		return abandonadas;
-	}
-	public void setAbandonadas(int abandonadas) {
-		this.abandonadas = abandonadas;
-	}
-	
-	private Time tiempoTotal;
-	public Time getTiempoTotal() {
-		return tiempoTotal;
-	}
-	public void setTiempoTotal(Time tiempoTotal) {
-		this.tiempoTotal = tiempoTotal;
-	}
+	private String apellido;
 
 }

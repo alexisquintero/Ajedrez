@@ -8,11 +8,16 @@ import excepciones.ApplicationException;
 
 public class ControladorAjedrez {
 	
+	public ControladorAjedrez(){		
+		datosPartida = new DatosPartida();
+		datosJugador = new DatosJugador();
+		datosJugadorPartida = new DatosJugadorPartida();
+	}
 
-	private Partida partida = new Partida();
-	private DatosJugador datosJugador = new DatosJugador();
-	private Jugador jugador1 = new Jugador();
-	private Jugador jugador2 = new Jugador();
+	private Partida partida;
+	private DatosPartida datosPartida;
+	private DatosJugador datosJugador;
+	private DatosJugadorPartida datosJugadorPartida;
 	
 	public char[] movimiento(StringBuilder desde, StringBuilder hasta){
 		return partida.movimiento(desde, hasta);
@@ -33,12 +38,9 @@ public class ControladorAjedrez {
 		
 	}
 
-	public ArrayList<Jugador> buscar(String Blancas, String Negras) throws ApplicationException{
-//		Jugador[] jugadores = new Jugador[2];
+	public ArrayList<Jugador> buscar(int Blancas, int Negras) throws ApplicationException{
 		ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
-//		jugadores[0] = datosJugador.buscaJugador(Blancas);
 		jugadores.add(datosJugador.buscaJugador(Blancas));
-//		jugadores[1] = datosJugador.buscaJugador(Negras);
 		jugadores.add(datosJugador.buscaJugador(Negras));
 		return jugadores;
 	}
@@ -46,6 +48,39 @@ public class ControladorAjedrez {
 	public char promocion(String string) {
 		return partida.promocion(string);
 		
+	}
+
+	public void crearJugador(Jugador j) throws ApplicationException {
+		datosJugador.creaJugador(j);
+		
+	}
+
+	public void inicializaJugadores(ArrayList<Jugador> jugadores) {
+//		jugador1 = jugadores.get(0);
+//		jugador2 = jugadores.get(1);	
+//		partida.setBlancas(jugadores.get(0));
+//		partida.setNegras(jugadores.get(1));
+		partida = new Partida(jugadores.get(0),jugadores.get(1));
+	}
+
+	public int inicializaPartida() throws ApplicationException {
+		Serializador serializador = new Serializador();
+		datosPartida.nuevaPartida(partida, serializador.serializar(partida.getTablero().getPiezas()));
+		return partida.getIdPartida();
+		
+	}
+
+	public Partida buscaJugadorPartida(ArrayList<Jugador> jugadores) throws ApplicationException {
+		return datosJugadorPartida.buscarJugadorPartida(jugadores.get(0).getDni(), jugadores.get(1).getDni());
+		
+	}
+
+	public ArrayList<Pieza> getComidasBlancas() {
+		return partida.getComidasBlancas();	
+	}
+
+	public ArrayList<Pieza> getComidasNegras() {
+		return partida.getComidasNegras();
 	}
 
 }

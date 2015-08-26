@@ -2,6 +2,11 @@ package entidades;
 
 public class Alfil extends Pieza {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2044278675336507550L;
+
 	public Alfil(boolean L) {
 		super(L);
 		if(L){

@@ -29,18 +29,18 @@ public class MySQL {
 	}
 	 
 	 public Connection Connect() throws ApplicationException{   
-		 
+
 		 Connection conn = null;
 			 
-			 String url = "jdbc:mysql://201.212.117.27:1433/Ajedrez";	
-//			 String url = "jdbc:mysql://localhost:3306/Ajedrez";	
+			 String url = "jdbc:mysql://localhost:3306/Ajedrez";	
 			 String user = "Java";
 			 String password = "Java";
 //TODO: Usar la url, user y password desde un .ini
 		 
-			 try {
-				conn = DriverManager.getConnection(url, user, password);
+			 try {	
+				conn = DriverManager.getConnection(url, user, password);		
 			} catch (SQLException e) {
+				e.printStackTrace();
 				throw new ApplicationException("Error al actualizar datos de persona", e);
 			}
 			 
@@ -76,10 +76,8 @@ public class MySQL {
 	IP						->	201.212.117.27
 		Jugador
 			dni				->	char(8)					->clave primaria
-			nick			->	char(20)				
-			ganadas			->	int
-			perdidas		->	int			
-			empatadas		->	int
+			nombre			->	varchar(20)
+			apellido		->  varchar(20)				
 		Partida
 			idPartida		->	int(Autoincremental)	->Clave primaria
 			tablero			->	varchar

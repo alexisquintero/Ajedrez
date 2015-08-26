@@ -5,6 +5,11 @@ public class Peon extends Pieza {
 //TODO:	private Bool sinMover = True;  
 //TODO: crear getter y setter
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8962839842493574976L;
+
 	public Peon(boolean L) {
 		super(L);
 		if(L){

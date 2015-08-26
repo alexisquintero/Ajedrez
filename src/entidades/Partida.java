@@ -1,31 +1,32 @@
 package entidades;
 
+import java.util.ArrayList;
+
 public class Partida {
 	
-	private Tablero tablero = new Tablero();
+	private Tablero tablero;
 	
 	private Jugador blancas;
+	public Partida(Jugador jugador, Jugador jugador2) {
+		blancas = jugador;
+		negras = jugador2;
+		tablero = new Tablero();
+		turno = true;//Empiezan blancas
+	}
 	public Jugador getBlancas() {
 		return blancas;
 	}
-	public void setBlancas(Jugador blancas) {
-		this.blancas = blancas;
-	}
 	
-	private Tablero tab;
-	public Tablero getTab() {
-		return tab;
+	public Tablero getTablero() {
+		return tablero;
 	}
-	public void setTab(Tablero tab) {
-		this.tab = tab;
+	public void setTablero(Tablero tablero) {
+		this.tablero = tablero;
 	}
-	
+
 	private Jugador negras;
 	public Jugador getNegras() {
 		return negras;
-	}
-	public void setNegras(Jugador negras) {
-		this.negras = negras;
 	}
 	
 	private int idPartida;
@@ -36,8 +37,14 @@ public class Partida {
 		this.idPartida = idPartida;
 	}
 	
-	private boolean turno = true; //Empiezan blancas
+	private boolean turno; 
 	
+	public boolean isTurno() {
+		return turno;
+	}
+	public void setTurno(boolean turno) {
+		this.turno = turno;
+	}
 	public char[][] Posiciones() {		
 		return tablero.Posiciones();
 	}
@@ -73,6 +80,12 @@ public class Partida {
 		boolean lado = turno ? false : true; //debido a que ya se hizo el movimiento
 		return tablero.promocion(string, lado);
 		
+	}
+	public ArrayList<Pieza> getComidasBlancas() {
+		return tablero.getComidasBlancas();		
+	}
+	public ArrayList<Pieza> getComidasNegras() {
+		return tablero.getComidasNegras();
 	}
 	
 }

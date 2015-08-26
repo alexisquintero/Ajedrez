@@ -22,12 +22,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
-import java.awt.SystemColor;
-import javax.swing.SwingConstants;
 
 public class Login {
 	
-	private ControladorAjedrez ca;
+	private ControladorAjedrez ca = new ControladorAjedrez();
+	private int crearJugadores = 0;
+	ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
 
 	private JFrame frame;
 	private JTextField txtBlancas;
@@ -37,8 +37,11 @@ public class Login {
 	private JButton btnCrearJugadores;
 	private JLabel lblJugador;
 	private JLabel lblJugador_1;
-	private JTextField txtBlancasNick;
-	private JTextField txtNegrasNick;
+	private JLabel lblBlancasNyA;
+	private JLabel lblNegrasNyA;
+	private JLabel lblBlancasNombreyapellido;
+	private JLabel lblNegrasNombreYApellido;
+	private JButton btnJuegoNuevo;
 
 	/**
 	 * Launch the application.
@@ -91,11 +94,8 @@ public class Login {
 		frame.getContentPane().add(txtBlancas, "cell 1 0 2 1,growx");
 		txtBlancas.setColumns(10);
 		
-		txtBlancasNick = new JTextField();
-		txtBlancasNick.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtBlancasNick.setBackground(SystemColor.menu);
-		frame.getContentPane().add(txtBlancasNick, "cell 4 0 2 1,growx");
-		txtBlancasNick.setColumns(10);
+		lblBlancasNyA = new JLabel("");
+		frame.getContentPane().add(lblBlancasNyA, "flowx,cell 4 0");
 		
 		lblJugador_1 = new JLabel("Jugador 2");
 		frame.getContentPane().add(lblJugador_1, "cell 0 1,alignx right");
@@ -122,69 +122,122 @@ public class Login {
 			}
 		});
 		
-		txtNegrasNick = new JTextField();
-		txtNegrasNick.setBackground(SystemColor.menu);
-		frame.getContentPane().add(txtNegrasNick, "cell 4 1 2 1,growx");
-		txtNegrasNick.setColumns(10);
+		lblNegrasNyA = new JLabel("");
+		frame.getContentPane().add(lblNegrasNyA, "flowx,cell 4 1");
 		frame.getContentPane().add(btnBuscar, "cell 1 3,grow");
 		
-		btnCrearJugadores = new JButton("Crear jugadores");
+		btnCrearJugadores = new JButton("Crear jugador");
+		btnCrearJugadores.setEnabled(false);
 		btnCrearJugadores.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: programar
-			}
+				crearJugador();			
+			}	
 		});
 		frame.getContentPane().add(btnCrearJugadores, "cell 4 3,grow");
 		
-		JButton btnJuegoNuevo = new JButton("Juego nuevo");
+		btnJuegoNuevo = new JButton("Juego nuevo");
+		btnJuegoNuevo.setEnabled(false);
 		btnJuegoNuevo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				VentanaPrincipal vp = new VentanaPrincipal(); 
-				vp.main(null);//TODO:agegar parámetros
+				VentanaPrincipal.main(jugadores);			
 			}
 		});
 		frame.getContentPane().add(btnJuegoNuevo, "cell 1 5,grow");
 		
 		btnContinuar = new JButton("Continuar");
+		btnContinuar.setEnabled(false);
 		btnContinuar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: programar
-			}
+				clickContinuar();
+			}		
 		});
 		frame.getContentPane().add(btnContinuar, "cell 1 7,grow");
+		
+		lblBlancasNombreyapellido = new JLabel("");
+		lblBlancasNombreyapellido.setEnabled(false);
+		frame.getContentPane().add(lblBlancasNombreyapellido, "cell 4 0,grow");
+		
+		lblNegrasNombreYApellido = new JLabel("");
+		lblNegrasNombreYApellido.setEnabled(false);
+		frame.getContentPane().add(lblNegrasNombreYApellido, "cell 4 1,grow");
 	}
 	
 	private void buscar(String j1, String j2){
 		try {
-//			Jugador[] jugadores = new Jugador[2];
-			ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
-			System.out.println(txtBlancas.getText() + " y " + txtNegras.getText());
-			jugadores = ca.buscar(txtBlancas.getText(), txtNegras.getText());
-//			ca.buscar(j1, j2);
-			if(!jugadores.get(0).equals(null)){
-				
-				JTextField xField = new JTextField(5);
-			    JTextField yField = new JTextField(5);
 			
-				JPanel myPanel = new JPanel();
-			    myPanel.add(new JLabel("x:"));
-			    myPanel.add(xField);
-			    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-			    myPanel.add(new JLabel("y:"));
-			    myPanel.add(yField);
-
-			    int result = JOptionPane.showConfirmDialog(null, myPanel, 
-			             "Please Enter X and Y Values", JOptionPane.OK_CANCEL_OPTION);
-			    if (result == JOptionPane.OK_OPTION) {
-			       System.out.println("x value: " + xField.getText());
-			       System.out.println("y value: " + yField.getText());
-			    }
-//				JOptionPane.showInputDialog(parentComponent, message)
+			jugadores = ca.buscar(Integer.parseInt(txtBlancas.getText()), Integer.parseInt(txtNegras.getText()));
+			
+			if(!(jugadores.get(0) == null)){
+				lblBlancasNombreyapellido.setText(jugadores.get(0).getNombre() + " " + jugadores.get(0).getApellido());				
+			}else{
+				lblBlancasNombreyapellido.setText("No existe");
+				btnCrearJugadores.setEnabled(true);
+				crearJugadores += 1;
 			}
-					
+			
+			if(!(jugadores.get(1) == null)){
+				lblNegrasNombreYApellido.setText(jugadores.get(1).getNombre() + " " + jugadores.get(1).getApellido());
+			}else{
+				lblNegrasNombreYApellido.setText("No existe");
+				btnCrearJugadores.setEnabled(true);
+				crearJugadores += 1;
+			}
+			
+			if((jugadores.get(0) == null) && (jugadores.get(1) == null)){
+				btnCrearJugadores.setText("Crear jugadores");
+			}
+			
+			if(!(jugadores.get(0) == null) && !(jugadores.get(1) == null)){
+				btnJuegoNuevo.setEnabled(true);
+				ca.buscaJugadorPartida(jugadores);
+			}
+								
 		} catch (ApplicationException ae) {
 			JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	
+	private void crearJugador() {
+		try{
+			for (int i = 0; i < crearJugadores; i++) {
+				Jugador j = new Jugador();
+				
+				JTextField jtfDni = new JTextField(5);
+				JTextField jtfNombre = new JTextField(5);
+				JTextField jtfApellido = new JTextField(5);				
+			
+				JPanel myPanel = new JPanel();
+			    myPanel.add(new JLabel("DNI:"));
+			    myPanel.add(jtfDni);
+			    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+			    myPanel.add(new JLabel("Nombre:"));
+			    myPanel.add(jtfNombre);
+			    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+			    myPanel.add(new JLabel("Apellido:"));
+			    myPanel.add(jtfApellido);
+			    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
+
+			    int result = JOptionPane.showConfirmDialog(null, myPanel, "Opciones", JOptionPane.OK_CANCEL_OPTION);
+			    if (result == JOptionPane.OK_OPTION) {
+			    	j.setDni(Integer.parseInt(jtfDni.getText()));
+			    	j.setNombre(jtfNombre.getText());
+			    	j.setApellido(jtfApellido.getText());
+			    	
+			    	ca.crearJugador(j);
+			    }
+														
+			}
+			crearJugadores = 0;
+			btnCrearJugadores.setEnabled(false);
+		}catch(ApplicationException ae){
+			JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+	
+	private void clickContinuar() {
+//		ca.continuar(jugadores);
+		
 	}
 
 }

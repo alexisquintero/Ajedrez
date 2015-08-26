@@ -27,10 +27,15 @@ import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.BorderLayout;
 
 import javax.swing.JTextField;
+
+import entidades.Jugador;
+import entidades.Pieza;
+import excepciones.ApplicationException;
 
 public class VentanaPrincipal {
 	
@@ -49,27 +54,32 @@ public class VentanaPrincipal {
 
 	private JFrame frame;
 	private JTextField txtInfo;
-	private JTextField txtNickNegras;
-	private JTextField txtNickBlancas;
+	private static JTextField txtAyNNegras;
+	private static JTextField txtAyNBlancas;
 	private JTextField txtNegrasComidas;
 	private JTextField txtBlancasComidas;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(ArrayList<Jugador> jugadores) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					VentanaPrincipal window = new VentanaPrincipal();
 					window.frame.setVisible(true);
 					window.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+					
+					sacarFocusPainted();
+					inicializaJugadores(jugadores);
+					inicializarTablero();				
+					window.frame.setTitle("Juego número: " + String.valueOf(incializaPartida()));
 				} catch (Exception e) {
 					e.printStackTrace();
-				}	
-				sacarFocusPainted();
-				inicializarTablero();
+				}								
+				
 			}
+			
 		});
 	}
 
@@ -803,19 +813,23 @@ public class VentanaPrincipal {
 		frame.getContentPane().add(panelJugador2, "cell 1 0,grow");
 		panelJugador2.setLayout(new BorderLayout(0, 0));
 		
-		txtNickNegras = new JTextField();
-		txtNickNegras.setEditable(false);
-		panelJugador2.add(txtNickNegras, BorderLayout.CENTER);
-		txtNickNegras.setColumns(10);
+		txtAyNNegras = new JTextField();
+		txtAyNNegras.setBackground(UIManager.getColor("Button.background"));
+		txtAyNNegras.setEditable(false);
+		panelJugador2.add(txtAyNNegras, BorderLayout.CENTER);
+		txtAyNNegras.setColumns(10);
+		txtAyNNegras.setHorizontalAlignment((int) JTextField.CENTER_ALIGNMENT);
 		
 		JPanel panelComidas2 = new JPanel();
 		frame.getContentPane().add(panelComidas2, "cell 1 1,grow");
 		panelComidas2.setLayout(new BorderLayout(0, 0));
 		
 		txtNegrasComidas = new JTextField();
+		txtNegrasComidas.setBackground(Color.WHITE);
 		txtNegrasComidas.setEditable(false);
 		panelComidas2.add(txtNegrasComidas, BorderLayout.CENTER);
 		txtNegrasComidas.setColumns(10);
+		txtNegrasComidas.setForeground(Color.BLACK);
 		
 		JPanel panelInformacionAdicional = new JPanel();
 		frame.getContentPane().add(panelInformacionAdicional, "cell 1 2,grow");
@@ -839,18 +853,22 @@ public class VentanaPrincipal {
 		panelComidas1.setLayout(new BorderLayout(0, 0));
 		
 		txtBlancasComidas = new JTextField();
+		txtBlancasComidas.setBackground(Color.BLACK);
 		txtBlancasComidas.setEditable(false);
 		panelComidas1.add(txtBlancasComidas, BorderLayout.CENTER);
 		txtBlancasComidas.setColumns(10);
+		txtBlancasComidas.setForeground(Color.WHITE);
 		
 		JPanel panelJugador1 = new JPanel();
 		frame.getContentPane().add(panelJugador1, "cell 1 4,grow");
 		panelJugador1.setLayout(new BorderLayout(0, 0));
 		
-		txtNickBlancas = new JTextField();
-		txtNickBlancas.setEditable(false);
-		panelJugador1.add(txtNickBlancas, BorderLayout.CENTER);
-		txtNickBlancas.setColumns(10);
+		txtAyNBlancas = new JTextField();
+		txtAyNBlancas.setBackground(new Color(204, 0, 0));
+		txtAyNBlancas.setEditable(false);
+		panelJugador1.add(txtAyNBlancas, BorderLayout.CENTER);
+		txtAyNBlancas.setColumns(10);
+		txtAyNBlancas.setHorizontalAlignment((int) JTextField.CENTER_ALIGNMENT);
 		
 		botones.put("A1",btnA1);botones.put("B1",btnB1);botones.put("C1",btnC1);botones.put("D1",btnD1);botones.put("E1",btnE1);botones.put("F1",btnF1);botones.put("G1",btnG1);botones.put("H1",btnH1);
 		botones.put("A2",btnA2);botones.put("B2",btnB2);botones.put("C2",btnC2);botones.put("D2",btnD2);botones.put("E2",btnE2);botones.put("F2",btnF2);botones.put("G2",btnG2);botones.put("H2",btnH2);
@@ -927,8 +945,10 @@ public class VentanaPrincipal {
 					desde.delete(0, 2);
 					if(txtInfo.getText().length() != 0){
 						txtInfo.setText("");
-					}
+					}					
 				}
+				actualizarComidas();
+				actualizarActivo();
 				if(pieza[1] != '\u0000'){
 					StringBuilder desde1 = new StringBuilder();
 					StringBuilder hasta1 = new StringBuilder();
@@ -968,7 +988,7 @@ public class VentanaPrincipal {
 		ca.actualizarTablero(estado);
 		
 	}
-	
+
 	private static void inicializarTablero(){
 		
 		char[][] posicion = ca.inicializarTablero();
@@ -1017,6 +1037,41 @@ public class VentanaPrincipal {
 	}
 	
 	private void despintarTablero(){
+//TODO: para despintar el amarillo guardar una máscara con los colores default de cada cuadro y 
+//		guardar el array de movimientos posibles como variable global si se necesita
+	}
+	
+	private void actualizarComidas() {
+		ArrayList<Pieza> comidas = new ArrayList<Pieza>();
+		if(lado){	//Ya se cambió el lado
+			comidas = ca.getComidasBlancas();
+		}else{
+			comidas = ca.getComidasNegras();
+		}
+		
+		if(!comidas.isEmpty()){
+			StringBuffer comida = new StringBuffer();
+			for (int i = 0; i < comidas.size(); i++) {
+				comida.append(comidas.get(i).getSimbolo());
+			}
+			if(lado){
+				txtBlancasComidas.setText(comida.toString());
+			}else{
+				txtNegrasComidas.setText(comida.toString());
+			}
+		}
+		
+	}
+	
+	private void actualizarActivo() {
+		if(lado){
+			txtAyNBlancas.setBackground(new Color(204, 0, 0));
+			txtAyNNegras.setBackground(UIManager.getColor("Button.background"));
+		}else{
+			txtAyNBlancas.setBackground(UIManager.getColor("Button.background"));
+			txtAyNNegras.setBackground(new Color(204, 0, 0));
+		}
+		
 		
 	}
 	
@@ -1110,6 +1165,23 @@ public class VentanaPrincipal {
 	    }
 	    return 'P';   
 	}
-//TODO: para despintar el amarillo guardar una máscara con los colores default de cada cuadro y guardar el array de movimientos posibles como variable global si se necesita
+	
+	private static void inicializaJugadores(ArrayList<Jugador> jugadores) {
+		ca.inicializaJugadores(jugadores);
+		txtAyNBlancas.setText(jugadores.get(0).getNombre() + " " + jugadores.get(0).getApellido());
+		txtAyNNegras.setText(jugadores.get(1).getNombre() + " " + jugadores.get(1).getApellido());
+	}
+	
+	private static int incializaPartida() {
+		try {
+//			window.frame.setTitle(String.valueOf(ca.inicializaPartida()));
+			return ca.inicializaPartida();
+		} catch (ApplicationException ae) {
+			JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		return 0;
+		
+	}	
+
 }
 

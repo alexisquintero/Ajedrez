@@ -1,5 +1,6 @@
 package datos;
 
+import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,81 +19,100 @@ public class DatosPartida {
 	private PreparedStatement pstm = null;
 	private ResultSet rsl = null;
 	
-	/**Crea una nueva partida
-	 * 
-	 * @param p
-	 * @return Devuelve un String con los datos del proceso
-	 * @throws ApplicationException 
-	 */
-	public void nuevaPartida(Partida p) throws ApplicationException{
+	public void nuevaPartida(Partida p, ByteArrayOutputStream byteArrayOutputStream) throws ApplicationException{
 		
 		Jugador j1 = p.getBlancas();
 		Jugador j2 = p.getNegras();
-//		String resp = "";
-		String movimientos = "";
-	
+		
 		try{								
 			myConn = sql.Connect();	
 			//Crea nueva partida
-			String query = "INSERT INTO partida(movimientos) VALUES (?)";
+			String query = "INSERT INTO partida(tablero, lado) VALUES (?, ?)";
 			pstm = myConn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 				 
-			pstm.setString(1, movimientos);
+			pstm.setBytes(1, byteArrayOutputStream.toByteArray());
+			pstm.setBoolean(2, true);
 			 
 			pstm.executeUpdate();
 			rsl = pstm.getGeneratedKeys();
-			rsl.next();
+			rsl.next();	
 			
-			//Actualiza p y crea la respuesta
-			p.setIdPartida(rsl.getInt(1));	
-//			resp = "Juego número " + String.valueOf(rsl.getInt(1)) + " creado"; 
+			p.setIdPartida(rsl.getInt(1));	//Actualiza p 
 			
 			//Crea asociación en la tabla jugador-partida
-			String query2 = "INSERT INTO jugador-partida(idJuego, idBlancas, idNegras) VALUES (?, ?, ?)";
+			String query2 = "INSERT INTO jugadorPartida(idPartida, dniBlancas, dniNegras) VALUES (?, ?, ?)";
 			pstm = myConn.prepareStatement(query2);
 				 
 			pstm.setString(1, String.valueOf(rsl.getInt(1)));
-			pstm.setInt(2, j1.getId());
-			pstm.setInt(3, j2.getId());
+			pstm.setInt(2, j1.getDni());
+			pstm.setInt(3, j2.getDni());
 			
 			pstm.executeUpdate();
+			
 														
 		}
 		catch(SQLException e){
-			
-//			resp = e.getMessage();
-			throw new ApplicationException("Error al actualizar datos de persona", e);
+			e.printStackTrace();
+			throw new ApplicationException("Error al crear la partida", e);
 			
 		}
 		finally{			
 			sql.Close(rsl, stm, myConn);			
 		}							
-	
-//		return resp;
 
 	}
 	
 	public void actualizaPartida(Partida p) throws ApplicationException{
-//		String resp = "Partida actualizada";
 		
 		try {
+				Serializador serializador = new Serializador();
+				
 				myConn = sql.Connect();
-				String query = "UPDATE partida SET movimientos = ? WHERE ( idPartida = " + String.valueOf(p.getIdPartida()) + ")" ;
+				String query = "UPDATE partida SET tablero = ?, lado = ? WHERE ( idPartida = " + String.valueOf(p.getIdPartida()) + ")" ;
 			
 				pstm = myConn.prepareStatement(query);
 				
-//				pstm.setString(1, p.getMovimientos().toString());
+				pstm.setBytes(1, serializador.serializar(p.getTablero().getPiezas()).toByteArray());
+				pstm.setBoolean(2, p.isTurno());
 			
 				pstm.executeUpdate();                      
 			
 		} catch (SQLException e) {
-//			resp = e.getMessage();
-			throw new ApplicationException("Error al actualizar datos de persona", e);
+			throw new ApplicationException("Error al actualizar la partida", e);
 		} finally{
 			sql.Close(rsl, stm, myConn);
 		}
 		
-//		return resp;
 	}
+/*	
+	public void buscarPartida(int id){
+		Partida p = null;
+		
+		myConn = sql.Connect();
+		String query = "SELECT * FROM Partida WHERE ( idPartida = " + id + " )";
+			
+		try {
+			pstm = myConn.prepareStatement(query);
+			stm = myConn.createStatement();
+				 
+			rsl = stm.executeQuery(query);
+			while(rsl.next()){
+				
+				
+				
+				p = new Partida();
+				
+				ju.setNombre(rsl.getString("nombre"));
+				ju.setApellido(rsl.getString("apellido"));
+				ju.setDni(rsl.getInt("dni"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new ApplicationException("Error al buscar jugador", e);
+		}
+		
+		return ju;
+	}
+*/	
 
 }

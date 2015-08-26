@@ -2,6 +2,11 @@ package entidades;
 
 public class Torre extends Pieza {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4807391715833782139L;
+
 	public Torre(boolean L) {
 		super(L);
 		if(L){

@@ -1,12 +1,31 @@
 package entidades;
 
-public class Tablero {
+import java.util.ArrayList;
+
+public class Tablero{
 	
 	private Pieza[][] piezas = new Pieza[8][8];
+	public Pieza[][] getPiezas() {
+		return piezas;
+	}
+
+	public void setPiezas(Pieza[][] piezas) {
+		this.piezas = piezas;
+	}
+
 	private int columnaHasta, filaHasta;
-//	private int[][] flagEnroque = new int[2][2]; 	//Indica que torre hay que mover en caso de enroque
-	private boolean flagEnroque = false;			//Primera posicion para el color (1 = blancas) y segunda para lado (1 = derecha)
+	private boolean flagEnroque = false;		
 	private boolean flagEnroqueLado = false;
+	private ArrayList<Pieza> comidasBlancas = new ArrayList<Pieza>();
+	private ArrayList<Pieza> comidasNegras = new ArrayList<Pieza>();
+	
+	public ArrayList<Pieza> getComidasBlancas() {
+		return comidasBlancas;
+	}
+
+	public ArrayList<Pieza> getComidasNegras() {
+		return comidasNegras;
+	}
 	
 	public Tablero(){
 		
@@ -94,7 +113,6 @@ public class Tablero {
 		char comer = 'N';	//N: no come|A:come 2 lados|D: come derecha|I:come izquierda
 		int columnaDesde = Character.getNumericValue(desde.charAt(0))-10;
 		int filaDesde = Character.getNumericValue(desde.charAt(1))-1;
-//		if ((columnaDesde+1 < 8) && (columnaDesde-1 > -1) && (filaDesde+1 < 8) && (filaDesde+1 > -1)) {
 		if ((piezas[filaDesde][columnaDesde].getSimbolo() == '\u2659') || (piezas[filaDesde][columnaDesde].getSimbolo() == '\u265F')) {
 			//Si es peon y puede comer también se puede mover diagonalmente
 			boolean derecha = false, izquierda = false;
@@ -174,11 +192,19 @@ public class Tablero {
 		if(!flagJaqueMate){					
 			int columnaDesde = Character.getNumericValue(desde.charAt(0)) - 10;
 			int filaDesde = Character.getNumericValue(desde.charAt(1)) - 1;
+			
+			if(piezas[filaHasta][columnaHasta] != null){
+				if(piezas[filaHasta][columnaHasta].getLado()){
+					comidasBlancas.add(piezas[filaHasta][columnaHasta]);
+				}else{
+					comidasNegras.add(piezas[filaHasta][columnaHasta]);
+				}
+			}
+			
 			piezas[filaHasta][columnaHasta] = piezas[filaDesde][columnaDesde]; //mueve la pieza desde a hasta
 			piezas[filaDesde][columnaDesde] = null; //pone null en desde
 			piezas[filaHasta][columnaHasta].mover();
 			simbolo[0] = piezas[filaHasta][columnaHasta].getSimbolo();	
-//			piezas[filaHasta][columnaHasta].mueve();
 		}
 		
 		if(((filaHasta == 0) || (filaHasta == 7)) && ((simbolo[0] == '\u265F') || (simbolo[0]== '\u2659'))){
@@ -206,7 +232,7 @@ public class Tablero {
 				
 		return simbolo;
 	}
-	
+
 	private int[][] controlarMovimientos(int[][] arregloPosibles, StringBuilder desde){ //Controla el movimiento en las 8 direcciones para que no atraviese otra pieza
 //TODO: controlar que ningún movimiento deje al rey propio en jaque 
 		int dx = 0, dy = 0, x = 0, y = 0;

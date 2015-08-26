@@ -17,76 +17,56 @@ public class DatosJugador {
 	private PreparedStatement pstm = null;
 	private ResultSet rsl = null;
 	
-	
-	/**Crea un nuevo usuario, devuelve un String con los datos del proceso
-	 * 
-	 * @param u Objeto usuario con los datos a guardar
-	 * @throws ApplicationException 
-	 */
-	public String creaUsuario(Jugador j) throws ApplicationException{
+
+	public void creaJugador(Jugador j) throws ApplicationException{
 		
-		String resp = "Usuario " + j.getNick() + " creado";
 		try{
-			Jugador busqueda = this.buscaJugador(j.getNick());
-			
-			if(busqueda.equals(null)){
 				
 				myConn = sql.Connect();
-				String query = "INSERT INTO usuario(nick, password) VALUES (?,?)";
+				String query = "INSERT INTO Jugador(dni, nombre, apellido) VALUES (?,?,?)";
 				pstm = myConn.prepareStatement(query);
 				 
-				pstm.setString(1, j.getNick());
-				pstm.setString(2, j.getPassword());
+				pstm.setInt(1, j.getDni());
+				pstm.setString(2, j.getNombre());
+				pstm.setString(3, j.getApellido());
 			 
-				pstm.executeUpdate();
-				rsl = pstm.getGeneratedKeys();
-				
-			}else{
-				resp = "Nick no disponible";
-			}
+				pstm.executeUpdate();			
 						
 		}
 		catch(SQLException e){
 			
-			resp = e.getMessage();
-			throw new ApplicationException("Error al actualizar datos de persona", e);
+			throw new ApplicationException("Error al crear jugador", e);
 			
 		}
 		finally{			
 			sql.Close(rsl, stm, myConn);			
 		}	
 							
-		return resp;
 	}
 	
 	
-	/**Devuelve un objeto jugador en caso de existir un usuario con el nick usado, devuelve un objeto null en caso de no existir
-	 * 
-	 * @param nick
-	 * @throws SQLException 
-	 */
-	public Jugador buscaJugador(String DNI) throws ApplicationException{
+	public Jugador buscaJugador(int i) throws ApplicationException{
 	
 		Jugador ju = null;
 		
 		myConn = sql.Connect();
-		String query = "SELECT * FROM usuario WHERE ( dni = " + DNI + " )";
+		String query = "SELECT * FROM Jugador WHERE ( dni = " + i + " )";
 			
 		try {
 			pstm = myConn.prepareStatement(query);
+			stm = myConn.createStatement();
 				 
 			rsl = stm.executeQuery(query);
 			while(rsl.next()){
 				ju = new Jugador();
 				
-				ju.setNick(rsl.getString("nick"));
-				ju.setGanadas(rsl.getInt("ganadas"));
-				ju.setPerdidas(rsl.getInt("perdidas"));
-				ju.setAbandonadas(rsl.getInt("abandonadas"));
-				ju.setId(rsl.getInt("idJugador"));
+				ju.setNombre(rsl.getString("nombre"));
+				ju.setApellido(rsl.getString("apellido"));
+				ju.setDni(rsl.getInt("dni"));
 			}
 		} catch (SQLException e) {
-			throw new ApplicationException("Error al actualizar datos de persona", e);
+			e.printStackTrace();
+			throw new ApplicationException("Error al buscar jugador", e);
 		}
 		
 		return ju;

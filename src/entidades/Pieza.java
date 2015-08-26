@@ -1,6 +1,13 @@
 package entidades;
 
-public class Pieza {
+import java.io.Serializable;
+
+public class Pieza implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8189179161057033205L;
 
 	// True == blancas; False == negras
 	protected boolean lado;
