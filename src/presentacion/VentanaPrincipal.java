@@ -1,5 +1,6 @@
 package presentacion;
 
+import java.awt.Checkbox;
 import java.awt.EventQueue;
 
 
@@ -32,10 +33,13 @@ import java.util.HashMap;
 import java.awt.BorderLayout;
 
 import javax.swing.JTextField;
+import javax.swing.plaf.FontUIResource;
 
 import entidades.Jugador;
 import entidades.Pieza;
 import excepciones.ApplicationException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class VentanaPrincipal {
 	
@@ -67,18 +71,20 @@ public class VentanaPrincipal {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				ca = ca2;
-				try {
-					VentanaPrincipal window = new VentanaPrincipal();
-					window.frame.setVisible(true);
-					window.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-					
-					sacarFocusPainted();
-					inicializaJugadores(jugadores);
-					inicializarTablero();				
-					window.frame.setTitle("Juego número: " + String.valueOf(incializaPartida()));
-				} catch (Exception e) {
-					e.printStackTrace();
-				}								
+
+				VentanaPrincipal window = new VentanaPrincipal();
+				window.frame.setVisible(true);
+				window.frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+				
+				sacarFocusPainted();
+				inicializaJugadores(jugadores);
+				if(ca.getIdPartida() != -1){
+					continuarTablero();
+					lado = ca.getLado();
+				}else{
+					inicializarTablero();	
+				}							
+				window.frame.setTitle("Juego número: " + String.valueOf(incializaPartida()));							
 				
 			}
 			
@@ -97,6 +103,16 @@ public class VentanaPrincipal {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				try {
+					ca.guardarPartida();
+				} catch (ApplicationException ae) {
+					JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
 		frame.setBounds(100, 100, 719, 531);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new MigLayout("", "[grow,left][grow,right]", "[30.00,top][60.00,top][59.00,grow,center][60.00,bottom][30.00,bottom]"));		
@@ -895,7 +911,6 @@ public class VentanaPrincipal {
 			estado = 2;
 			colorDesde = botones.get(desde.toString()).getBackground();
 			botones.get(desde.toString()).setBackground(Color.RED);		
-//			actualizarTablero(ca.getMovimientosPosibles(desde));
 			movimientosPosibles = ca.getMovimientosPosibles(desde, lado);
 			if(movimientosPosibles.length == 1){	//No deja mover desde una posición sin pieza
 				botones.get(desde.toString()).setBackground(colorDesde);
@@ -1078,22 +1093,17 @@ public class VentanaPrincipal {
 	}
 	
 	private void clickOpciones(){
-		JTextField xField = new JTextField(5);
-//	    JTextField yField = new JTextField(5);
 	
 		JPanel myPanel = new JPanel();
-	    myPanel.add(new JLabel("Mostrar movimientos posibles(S/N):"));
-	    myPanel.add(xField);
-	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
-//	    myPanel.add(new JLabel("y:"));
-//	    myPanel.add(yField);
-
-	    int result = JOptionPane.showConfirmDialog(null, myPanel, 
-	             "Opciones", JOptionPane.OK_CANCEL_OPTION);
+//		myPanel.setFont(new Font("Serif",Font.PLAIN,20));
+		Checkbox cbMovimientosPosibles = new Checkbox("Mostrar movimientos posibles", false);
+		cbMovimientosPosibles.setFont(new Font("Serif",Font.PLAIN,20));
+	    myPanel.add(cbMovimientosPosibles);
+	    
+	    UIManager.put("OptionPane.buttonFont", new FontUIResource(new Font("Serif",Font.PLAIN,20)));
+	    int result = JOptionPane.showConfirmDialog(null, myPanel,"Opciones", JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
-	    	mostrarPosibles = xField.getText().equals("S")?true:false;
-//	       System.out.println("x value: " + xField.getText());
-//	       System.out.println("y value: " + yField.getText());
+	    	mostrarPosibles = cbMovimientosPosibles.getState();
 	    }
 	}
 	
@@ -1160,19 +1170,21 @@ public class VentanaPrincipal {
 	    myPanel.add(Box.createHorizontalStrut(15)); // a spacer
 	    
 	    String[] options = {"OK"};
-//	    int selectedOption = JOptionPane.showOptionDialog(null, panel, "The Title", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options , options[0]);
 	    int result = JOptionPane.showOptionDialog(null, myPanel,"Opciones", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options , options[0]);
 	    if (result == 0) {
 	    	return ca.promocion(group.getSelection().getActionCommand().toString());    	
 	    }
 	    return 'P';   
 	}
-	
+	/**Pone los nombres en la ventana a la derecha
+	 * 
+	 * @param jugadores
+	 */
 	private static void inicializaJugadores(ArrayList<Jugador> jugadores) {	
 		txtAyNBlancas.setText(jugadores.get(0).getNombre() + " " + jugadores.get(0).getApellido());
 		txtAyNNegras.setText(jugadores.get(1).getNombre() + " " + jugadores.get(1).getApellido());
 	}
-	
+
 	private static int incializaPartida() {
 		try {
 			return ca.inicializaPartida();
@@ -1182,6 +1194,28 @@ public class VentanaPrincipal {
 		return 0;
 		
 	}	
+	
+	private static void continuarTablero(){
+		Pieza[][] piezas = ca.getPiezas();
+		StringBuilder posicion = new StringBuilder();
+		for (char i = 'A'; i < 'I'; i++) {
+			for (int j = 1; j < 9; j++) {			
+				if (piezas[j - 1][Character.getNumericValue(i) - 10] != null) {					
+					posicion.append("" + i + j);
+					System.out.println(posicion);
+					botones.get(posicion.toString()).setText(Character.toString(piezas[j - 1][Character.getNumericValue(i) - 10].getSimbolo()));
+					if(piezas[j - 1][Character.getNumericValue(i) - 10].getLado()){
+						botones.get(posicion.toString()).setForeground(Color.WHITE);
+					}else{
+						botones.get(posicion.toString()).setForeground(Color.BLACK);
+					}
+				}else{
+					botones.get(posicion.toString()).setText("");
+				}
+				posicion.delete(0, 2);
+			}
+		}
+	}
 
 }
 

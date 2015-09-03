@@ -56,10 +56,6 @@ public class ControladorAjedrez {
 	}
 
 	public void inicializaJugadores(ArrayList<Jugador> jugadores) {
-//		jugador1 = jugadores.get(0);
-//		jugador2 = jugadores.get(1);	
-//		partida.setBlancas(jugadores.get(0));
-//		partida.setNegras(jugadores.get(1));
 		partida = new Partida(jugadores.get(0),jugadores.get(1));
 	}
 
@@ -85,6 +81,26 @@ public class ControladorAjedrez {
 	public void continuar() throws ApplicationException {
 		datosPartida.buscarPartida(partida);
 		
+	}
+
+	public Pieza[][] getPiezas() {
+		return partida.getTablero().getPiezas();
+	}
+
+	public int getIdPartida() {
+		return partida.getIdPartida();
+	}
+
+	public void guardarPartida() throws ApplicationException {
+		datosPartida.actualizaPartida(partida);
+	}
+
+	public boolean getLado() {
+		return partida.isTurno();
+	}
+
+	public void setIdPartida() {
+		partida.setIdPartida(-1);
 	}
 
 }

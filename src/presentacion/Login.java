@@ -140,6 +140,7 @@ public class Login {
 		btnJuegoNuevo.setEnabled(false);
 		btnJuegoNuevo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				ca.setIdPartida();
 				VentanaPrincipal.main(jugadores, ca);			
 			}
 		});
@@ -197,7 +198,7 @@ public class Login {
 				}
 			}
 								
-		} catch (ApplicationException ae) {
+		} catch (ApplicationException | NumberFormatException ae) {
 			JOptionPane.showMessageDialog(null, ae.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}

@@ -18,7 +18,6 @@ public class DatosJugadorPartida {
 	private ResultSet rsl = null;
 	
 	public Partida buscarJugadorPartida(Partida p) throws ApplicationException{
-//		Partida p = null;
 		
 		myConn = sql.Connect();
 		String query = "SELECT * FROM JugadorPartida WHERE (dniBlancas = " + p.getBlancas().getDni() + " and dniNegras = " + p.getNegras().getDni() + ")";

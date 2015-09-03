@@ -62,12 +62,11 @@ public class DatosPartida {
 				Serializador serializador = new Serializador();
 				
 				myConn = sql.Connect();
-				String query = "UPDATE partida SET tablero = ?, lado = ? WHERE ( idPartida = " + String.valueOf(p.getIdPartida()) + ")" ;
+				String query = "UPDATE partida SET tablero = ? WHERE ( idPartida = " + String.valueOf(p.getIdPartida()) + ")" ;
 			
 				pstm = myConn.prepareStatement(query);
 				
 				pstm.setBytes(1, serializador.serializar(p).toByteArray());
-				pstm.setBoolean(2, p.isTurno());
 			
 				pstm.executeUpdate();                      
 			
@@ -91,7 +90,7 @@ public class DatosPartida {
 			rsl = stm.executeQuery(query);
 			while(rsl.next()){
 				Serializador serializador = new Serializador();
-				Blob blob = rsl.getBlob("objeto");
+				Blob blob = rsl.getBlob("tablero");
 				serializador.deserializar(partida, blob);
 			}
 		} catch (SQLException e) {
