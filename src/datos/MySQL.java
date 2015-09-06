@@ -32,7 +32,8 @@ public class MySQL {
 
 		 Connection conn = null;
 			 
-			 String url = "jdbc:mysql://localhost:3306/Ajedrez";	
+			 String url = "jdbc:mysql://localhost:3306/Ajedrez";
+//		 	 String url = "jdbc:sqlserver://127.0.0.1:1433/Ajedrez";
 			 String user = "Java";
 			 String password = "Java";
 //TODO: Usar la url, user y password desde un .ini
@@ -80,9 +81,8 @@ public class MySQL {
 			apellido		->  varchar(20)				
 		Partida
 			idPartida		->	int(Autoincremental)	->Clave primaria
-			tablero			->	varchar
+			tablero			->	blob / varbinary(max)
 		Jugador-Partida
-			idJuego			->	int(Autoincremental)	->Clave primaria
 			idBlancas		->	char(8)
 			idNegras		->	char(8)
 			idPartida		->	int	

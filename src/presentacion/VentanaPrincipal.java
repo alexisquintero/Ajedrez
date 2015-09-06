@@ -1203,6 +1203,7 @@ public class VentanaPrincipal {
 				if (piezas[j - 1][Character.getNumericValue(i) - 10] != null) {					
 					posicion.append("" + i + j);
 					System.out.println(posicion);
+					System.out.println(botones.get(posicion.toString()).getActionCommand());
 					botones.get(posicion.toString()).setText(Character.toString(piezas[j - 1][Character.getNumericValue(i) - 10].getSimbolo()));
 					if(piezas[j - 1][Character.getNumericValue(i) - 10].getLado()){
 						botones.get(posicion.toString()).setForeground(Color.WHITE);
@@ -1210,7 +1211,7 @@ public class VentanaPrincipal {
 						botones.get(posicion.toString()).setForeground(Color.BLACK);
 					}
 				}else{
-					botones.get(posicion.toString()).setText("");
+					botones.get(posicion.toString()).setText(Character.toString('\u0000'));
 				}
 				posicion.delete(0, 2);
 			}

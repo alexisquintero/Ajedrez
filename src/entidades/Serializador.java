@@ -17,7 +17,6 @@ public class Serializador {
 			ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(byteArray);
 			oos.writeObject(tableroDatos);
-			
 			return byteArray;
 		}catch(IOException e){
 			throw new ApplicationException("Error al actualizar datos de persona", e);
