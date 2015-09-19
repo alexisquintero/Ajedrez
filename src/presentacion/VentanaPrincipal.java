@@ -81,11 +81,12 @@ public class VentanaPrincipal {
 				if(ca.getIdPartida() != -1){
 					continuarTablero();
 					lado = ca.getLado();
+					window.frame.setTitle("Juego número: " + ca.getIdPartida());
 				}else{
 					inicializarTablero();	
+					window.frame.setTitle("Juego número: " + String.valueOf(incializaPartida()));	
 				}							
-				window.frame.setTitle("Juego número: " + String.valueOf(incializaPartida()));							
-				
+														
 			}
 			
 		});
@@ -1199,11 +1200,9 @@ public class VentanaPrincipal {
 		Pieza[][] piezas = ca.getPiezas();
 		StringBuilder posicion = new StringBuilder();
 		for (char i = 'A'; i < 'I'; i++) {
-			for (int j = 1; j < 9; j++) {			
-				if (piezas[j - 1][Character.getNumericValue(i) - 10] != null) {					
-					posicion.append("" + i + j);
-					System.out.println(posicion);
-					System.out.println(botones.get(posicion.toString()).getActionCommand());
+			for (int j = 1; j < 9; j++) {	
+				posicion.append("" + i + j);
+				if (piezas[j - 1][Character.getNumericValue(i) - 10] != null) {									
 					botones.get(posicion.toString()).setText(Character.toString(piezas[j - 1][Character.getNumericValue(i) - 10].getSimbolo()));
 					if(piezas[j - 1][Character.getNumericValue(i) - 10].getLado()){
 						botones.get(posicion.toString()).setForeground(Color.WHITE);

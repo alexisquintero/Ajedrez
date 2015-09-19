@@ -82,7 +82,7 @@ public class DatosPartida {
 		
 		myConn = sql.Connect();
 		String query = "SELECT * FROM Partida WHERE ( idPartida = " + partida.getIdPartida() + " )";
-			
+//		Partida partida = new Partida(null, null);
 		try {
 			pstm = myConn.prepareStatement(query);
 			stm = myConn.createStatement();
@@ -97,6 +97,7 @@ public class DatosPartida {
 			e.printStackTrace();
 			throw new ApplicationException("Error al buscar partida", e);
 		}
+//		return partida;
 	}
 
 }

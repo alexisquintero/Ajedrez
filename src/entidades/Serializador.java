@@ -30,6 +30,7 @@ public class Serializador {
 			ois = new ObjectInputStream(blob.getBinaryStream());		
 			TableroDatos tableroDatos = (TableroDatos) ois.readObject();
 			partida.setTurno(tableroDatos.lado);
+			partida.getTablero().setPiezas(tableroDatos.piezas);
 			partida.getTablero().setFlagEnroque(tableroDatos.flagEnroque);
 			partida.getTablero().setFlagEnroqueLado(tableroDatos.flagEnroqueLado);
 			partida.getTablero().setComidasBlancas(tableroDatos.comidasBlancas);

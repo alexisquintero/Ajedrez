@@ -80,6 +80,7 @@ public class ControladorAjedrez {
 
 	public void continuar() throws ApplicationException {
 		datosPartida.buscarPartida(partida);
+//		partida = datosPartida.buscarPartida(partida.getIdPartida());
 		
 	}
 
